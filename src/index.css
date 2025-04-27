@@ -1,10 +1,25 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/src/assets/fonts/ClashDisplay_Complete/Fonts/TTF/ClashDisplay-Variable.ttf")
+    format("truetype");
+}
+@font-face {
+  font-family: "Geist", sans-serif;
+  src: url("/src/assets/fonts/Geist/Geist-VariableFont_wght.ttf")
+    format("truetype");
+}
+.GeistFont {
+  font-family: "Geist", sans-serif !important;
+}
 
 body {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
-  font-family: "Nunito", sans-serif;
+  font-family: "Clash Display", sans-serif !important;
   background: #f5f5f5;
   max-width: 1540px;
   margin: 0 auto;

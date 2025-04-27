@@ -1,10 +1,13 @@
 import react from "react";
 import LandingPage from "./Pages/landing/LandingPage";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
     <>
-      <LandingPage />
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>{" "}
     </>
   );
 }
