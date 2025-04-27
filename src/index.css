@@ -1,6 +1,5 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
-
+ 
 @font-face {
   font-family: "Clash Display";
   src: url("/src/assets/fonts/ClashDisplay_Complete/Fonts/TTF/ClashDisplay-Variable.ttf")

@@ -43,6 +43,7 @@ const AccountsDetail = () => {
 
   const ActiveAcc = "/users/accounts/active";
   const DeactivatedACC = "/users/accounts/deactivated";
+  
   useEffect(() => {
     setLoading(true);
     const FetchAccounts = async () => {
