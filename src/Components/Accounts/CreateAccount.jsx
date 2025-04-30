@@ -4,6 +4,8 @@ import axios from "axios";
 import { message } from "antd";
 ///////////////////////////////////////////////////////////////
 const CreateAccount = () => {
+  const Token = sessionStorage.getItem("token");
+
   const [InputValue, setInputValue] = useState("");
   const [Loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -27,13 +29,14 @@ const CreateAccount = () => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im0udW1lcjAxNkBnbWFpbC5jb20iLCJjdXN0b21lcl9ubyI6IkNVNjYxMSIsInRpbWVzdGFtcCI6IjIwMjUtMDQtMjZUMDg6NDU6MzIiLCJpYXQiOjE3NDU2NTcxMzIsImV4cCI6MTc0NjAxNzEzMn0.UyzqzEbZ2z_I7K3_D8_nKgt8JOZymHgoinofSWZtmgA`,
+            Authorization: `Bearer ${Token}`,
           },
         }
       );
       // console.log(response?.data);
-      messageApi.success(response?.data?.message);
+      messageApi.success("Account Created Successfully");
       setLoading(false);
+      sessionStorage.setItem("Refetch_Accounts", "true");
       setInputValue("");
       setIsModalOpen({
         isOpen: true,
@@ -74,34 +77,22 @@ const CreateAccount = () => {
                 </span>
               </div>
               <div>
-                {/* <button
-                  // onClick={() =>
-                  //   setIsModalOpen({
-                  //     isOpen: true,
-                  //     title: "Your 12X account is now Ready for trading",
-                  //     desc: "Please review your email for your login details, including your username and password. Alternatively, you can click the credentials button on your dashboard for quick access.",
-                  //     buttonName: "Continue",
-                  //     status: "create account",
-                  //   })
-                  // }
-                  className="cursor-pointer bg-[#FF4912] border-[1px] border-[#FF4912] py-3 px-[50px] text-white rounded-[12px] "
-                >
-                  Create
-                </button> */}
-
-                <button
-                  type="submit"
-                  disabled={Loading}
-                  className={`border-[1px] GeistFont border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px]
-                ${
-                  Loading
-                    ? "bg-[#FF1912] cursor-wait"
-                    : "bg-[#FF4912] cursor-pointer"
-                }
-                `}
-                >
-                  {Loading ? "Loading..." : "Create"}
-                </button>
+                {Loading ? (
+                  <p
+                    className={`border-[1px] GeistFont border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px] bg-[#FF1912] cursor-wait`}
+                  >
+                    Loading...
+                  </p>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={Loading}
+                    className={`border-[1px] GeistFont border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px]
+                  bg-[#FF4912] cursor-pointer`}
+                  >
+                    Create
+                  </button>
+                )}
               </div>
             </div>
           </form>

@@ -8,8 +8,13 @@ import {
 import AccountModel from "../Models/AccountModel";
 import axios from "axios";
 import { Modal, message } from "antd";
+import CreateAccount from "./CreateAccount";
 
 const AccountsDetail = () => {
+  const Token = sessionStorage.getItem("token");
+  const ApiRefetch = sessionStorage.getItem("Refetch_Accounts");
+  // console.log("Token get from Url and sent in accout details-->>", Token);
+
   const [showBG, setshowBG] = useState("Active");
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -45,6 +50,10 @@ const AccountsDetail = () => {
   const DeactivatedACC = "/users/accounts/deactivated";
 
   useEffect(() => {
+    sessionStorage.setItem("Refetch_Accounts", "false");
+
+    // console.log("Refetching accounts...");
+
     setLoading(true);
     const FetchAccounts = async () => {
       try {
@@ -54,16 +63,19 @@ const AccountsDetail = () => {
           }&limit=10`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im0udW1lcjAxNkBnbWFpbC5jb20iLCJjdXN0b21lcl9ubyI6IkNVNjYxMSIsInRpbWVzdGFtcCI6IjIwMjUtMDQtMjZUMDg6NDU6MzIiLCJpYXQiOjE3NDU2NTcxMzIsImV4cCI6MTc0NjAxNzEzMn0.UyzqzEbZ2z_I7K3_D8_nKgt8JOZymHgoinofSWZtmgA`,
+              Authorization: `Bearer ${Token}`,
             },
           }
         );
         // console.log(response.data);
         setAccountDetails(response?.data?.data);
         // Calculate pages based on total
-        const totalRecords = response?.data?.total || 0;
+        const totalRecords = response?.data?.total;
+        // console.log(totalRecords);
+
         setTotalPages(Math.ceil(totalRecords / 5)); //
         setLoading(false);
+        sessionStorage.setItem("Refetch_Accounts", false);
       } catch (error) {
         console.error("Error fetching profile:", error);
         setAccountDetails(null);
@@ -74,10 +86,12 @@ const AccountsDetail = () => {
     };
 
     FetchAccounts();
-  }, [showBG, currentPage]);
+  }, [showBG, currentPage, ApiRefetch]);
 
   return (
     <div>
+      <CreateAccount />
+
       <div className="mt-4 lg:px-[26px] px-[12px] lg:py-[20px] py-[10px] rounded-[16px] bg-[#FFFFFF] border-[1px] border-[#EBEBEB] ">
         <div className="GeistFont my-4 flex gap-3 bg-[#F5F5F5] p-2 rounded-[16px] w-[240px]">
           <h1
@@ -155,10 +169,10 @@ const AccountsDetail = () => {
                                   </p>
                                   <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
                                     $
-                                    {account.multiplier *
-                                      Number(account.starting_amount).toFixed(
-                                        2
-                                      )}
+                                    {(
+                                      Number(account?.multiplier) *
+                                      Number(account?.starting_amount)
+                                    ).toFixed(2)}
                                   </p>
                                 </div>
                               </div>
@@ -207,8 +221,10 @@ const AccountsDetail = () => {
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
                                   $
-                                  {account.current_equity -
-                                    Number(account.current_balance).toFixed(2)}
+                                  {(
+                                    Number(account?.current_equity) -
+                                    Number(account?.current_balance)
+                                  ).toFixed(2)}
                                 </p>
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <button
@@ -220,6 +236,7 @@ const AccountsDetail = () => {
                                         desc: "Use your profits to increase your 12X balance. Please note, your trading days timer will reset to 0",
                                         buttonName: "Upgrade",
                                         status: "Upgrade",
+                                        login: account.login,
                                       })
                                     }
                                     className="GeistFont w-full bg-[#FF4912] text-white py-2 rounded-lg text-[18px] cursor-pointer"
@@ -257,8 +274,11 @@ const AccountsDetail = () => {
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  {account.yesterday_equity -
-                                    account.current_balance}
+                                  $
+                                  {(
+                                    Number(account?.current_balance) -
+                                    Number(account?.yesterday_equity)
+                                  ).toFixed(2)}
                                 </p>
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <div className="w-full">
@@ -274,7 +294,8 @@ const AccountsDetail = () => {
                                       <div
                                         className="bg-[#171717] h-[8px] rounded-full"
                                         style={{
-                                          width: `${account.starting_amount}%`,
+                                          // width: `${account.starting_amount}%`,
+                                          width: `70%`,
                                         }}
                                       ></div>
                                     </div>
@@ -303,6 +324,7 @@ const AccountsDetail = () => {
                                         title: "Withdraw your trading profits",
                                         buttonName: "Withdraw",
                                         status: "Withdraw",
+                                        login: account.login,
                                       })
                                     }
                                   >
@@ -371,7 +393,7 @@ const AccountsDetail = () => {
           </div>
         )}
       </div>
-
+      {/* Model */}
       <div>
         <Modal
           footer={false}

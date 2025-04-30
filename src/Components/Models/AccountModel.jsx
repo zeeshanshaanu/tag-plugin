@@ -5,6 +5,8 @@ import { message } from "antd";
 ///////////////////////////////////////////////////////////////
 
 const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
+  const Token = sessionStorage.getItem("token");
+
   if (!isModalOpen.isOpen) return null;
   const [Loading, setLoading] = useState(false);
   const [InputValue, setInputValue] = useState("");
@@ -26,6 +28,8 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
     // Topup: "/users/transactions/topup",
   };
   const LoginData = isModalOpen.login;
+  // console.log(LoginData);
+
   const HandleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -41,11 +45,10 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
         },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im0udW1lcjAxNkBnbWFpbC5jb20iLCJjdXN0b21lcl9ubyI6IkNVNjYxMSIsInRpbWVzdGFtcCI6IjIwMjUtMDQtMjZUMDg6NDU6MzIiLCJpYXQiOjE3NDU2NTcxMzIsImV4cCI6MTc0NjAxNzEzMn0.UyzqzEbZ2z_I7K3_D8_nKgt8JOZymHgoinofSWZtmgA`,
+            Authorization: `Bearer ${Token}`,
           },
         }
       );
-      // console.log(response?.data);
       messageApi.success(response?.data?.message);
       setLoading(false);
       setInputValue("");
@@ -54,7 +57,9 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
       }, 1000);
     } catch (error) {
       console.error(error?.response);
-      messageApi.error(error?.response?.data?.detail);
+      messageApi.error(
+        error?.response?.data?.detail || "Failed to process request"
+      );
       setLoading(false);
     }
   };
