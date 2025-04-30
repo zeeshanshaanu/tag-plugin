@@ -43,7 +43,7 @@ const AccountsDetail = () => {
 
   const ActiveAcc = "/users/accounts/active";
   const DeactivatedACC = "/users/accounts/deactivated";
-  
+
   useEffect(() => {
     setLoading(true);
     const FetchAccounts = async () => {
@@ -143,7 +143,10 @@ const AccountsDetail = () => {
                                     Deposit
                                   </p>
                                   <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                    ${account?.starting_amount}
+                                    $
+                                    {Number(account?.starting_amount).toFixed(
+                                      2
+                                    )}
                                   </p>
                                 </div>
                                 <div className="cursor-pointer mt-2 bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
@@ -153,7 +156,9 @@ const AccountsDetail = () => {
                                   <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
                                     $
                                     {account.multiplier *
-                                      account.starting_amount}
+                                      Number(account.starting_amount).toFixed(
+                                        2
+                                      )}
                                   </p>
                                 </div>
                               </div>
@@ -168,7 +173,7 @@ const AccountsDetail = () => {
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  ${account.current_balance}
+                                  ${Number(account.current_balance).toFixed(2)}
                                 </p>
 
                                 {/* Button Positioned at the Bottom */}
@@ -203,7 +208,7 @@ const AccountsDetail = () => {
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
                                   $
                                   {account.current_equity -
-                                    account.current_balance}
+                                    Number(account.current_balance).toFixed(2)}
                                 </p>
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <button
@@ -262,7 +267,7 @@ const AccountsDetail = () => {
                                       <span className="font-[500]">
                                         {/* percent of starting_amount dd_limit */}
                                         {/*starting_amount show karani hai dd_limit dekh k  */}
-                                        ${account.dd_limit}
+                                        ${Number(account.dd_limit).toFixed(2)}{" "}
                                       </span>
                                     </p>
                                     <div className="w-full bg-[#D1D1D1] rounded-full h-[8px] mt-2 relative">
@@ -287,7 +292,7 @@ const AccountsDetail = () => {
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  {account.current_balance}
+                                  ${Number(account.current_balance).toFixed(2)}
                                 </p>
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <button
