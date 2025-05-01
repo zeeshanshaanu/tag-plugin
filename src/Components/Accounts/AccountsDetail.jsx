@@ -7,13 +7,12 @@ import {
 } from "@ant-design/icons";
 import AccountModel from "../Models/AccountModel";
 import axios from "axios";
-import { Modal, message } from "antd";
+import { Modal, Tooltip, message, Progress } from "antd";
 import CreateAccount from "./CreateAccount";
 
 const AccountsDetail = () => {
   const Token = sessionStorage.getItem("token");
   const ApiRefetch = sessionStorage.getItem("Refetch_Accounts");
-  // console.log("Token get from Url and sent in accout details-->>", Token);
 
   const [showBG, setshowBG] = useState("Active");
   const [messageApi, contextHolder] = message.useMessage();
@@ -183,7 +182,14 @@ const AccountsDetail = () => {
                                     BALANCE
                                   </p>
                                   <div className="my-auto">
-                                    <InfoCircleOutlined className="cursor-pointer" />
+                                    <Tooltip
+                                      title=" This is your current MT5 account balance "
+                                      color={"#FF4913"}
+                                      placement="top"
+                                      // key={color}
+                                    >
+                                      <InfoCircleOutlined className="cursor-pointer" />
+                                    </Tooltip>
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
@@ -216,7 +222,14 @@ const AccountsDetail = () => {
                                     PNL
                                   </p>
                                   <div className="my-auto">
-                                    <InfoCircleOutlined className="cursor-pointer" />
+                                    <Tooltip
+                                      title=" This is your floating profit/loss"
+                                      color={"#FF4913"}
+                                      placement="top"
+                                      // key={color}
+                                    >
+                                      <InfoCircleOutlined className="cursor-pointer" />
+                                    </Tooltip>{" "}
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
@@ -252,7 +265,14 @@ const AccountsDetail = () => {
                                     trading days
                                   </p>
                                   <div className="my-auto">
-                                    <InfoCircleOutlined className="cursor-pointer" />
+                                    <Tooltip
+                                      title="Days since account creation"
+                                      color={"#FF4913"}
+                                      placement="top"
+                                      // key={color}
+                                    >
+                                      <InfoCircleOutlined className="cursor-pointer" />
+                                    </Tooltip>{" "}
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
@@ -270,34 +290,82 @@ const AccountsDetail = () => {
                                     Drawdown
                                   </p>
                                   <div className="my-auto">
-                                    <InfoCircleOutlined className="cursor-pointer" />
+                                    <Tooltip
+                                      title="This is max drawdown allowed and your current drawdown, please refresh this page to fetch upto date drawdown values"
+                                      color={"#FF4913"}
+                                      placement="top"
+                                      // key={color}
+                                    >
+                                      <InfoCircleOutlined className="cursor-pointer" />
+                                    </Tooltip>{" "}
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  $
-                                  {(
-                                    Number(account?.current_balance) -
-                                    Number(account?.yesterday_equity)
-                                  ).toFixed(2)}
+                                  {account?.current_equity >
+                                  (
+                                    Number(account?.multiplier) *
+                                    Number(account?.starting_amount)
+                                  ).toFixed(2) ? (
+                                    "$0"
+                                  ) : (
+                                    <span>
+                                      $
+                                      {(
+                                        Number(account?.multiplier) *
+                                        Number(account?.starting_amount)
+                                      ).toFixed(2) -
+                                        Number(account?.current_equity).toFixed(
+                                          2
+                                        )}
+                                    </span>
+                                  )}
                                 </p>
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <div className="w-full">
                                     <p className="text-[20px] font-[500]">
                                       Max{" "}
                                       <span className="font-[500]">
-                                        {/* percent of starting_amount dd_limit */}
-                                        {/*starting_amount show karani hai dd_limit dekh k  */}
-                                        ${Number(account.dd_limit).toFixed(2)}{" "}
+                                        $
+                                        {(
+                                          (Number(account?.multiplier) *
+                                            Number(account?.starting_amount)) /
+                                          Number(account?.dd_limit)
+                                        ).toFixed(2)}
+                                        %
                                       </span>
                                     </p>
-                                    <div className="w-full bg-[#D1D1D1] rounded-full h-[8px] mt-2 relative">
-                                      <div
-                                        className="bg-[#171717] h-[8px] rounded-full"
-                                        style={{
-                                          // width: `${account.starting_amount}%`,
-                                          width: `70%`,
-                                        }}
-                                      ></div>
+                                    <div className="my-auto sm:my-0 my-2">
+                                      {/* <Progress
+                                        percent={
+                                          (
+                                            Number(account?.multiplier) *
+                                            Number(account?.starting_amount)
+                                          ).toFixed(2) -
+                                          Number(
+                                            account?.current_equity
+                                          ).toFixed(2)
+                                        }
+                                        strokeColor="#171717"
+                                        className="custom-progress"
+                                        showInfo={false}
+                                      /> */}
+                                      <Progress
+                                        percent={Math.min(
+                                          ((Number(account?.multiplier) *
+                                            Number(account?.starting_amount) -
+                                            Number(account?.current_equity)) /
+                                            ((Number(account?.multiplier) *
+                                              Number(
+                                                account?.starting_amount
+                                              )) /
+                                              Number(account?.dd_limit))) *
+                                            100,
+                                          100
+                                        ).toFixed(2)}
+                                        strokeColor="#171717"
+                                        className="custom-progress"
+                                        showInfo={false}
+                                      />
                                     </div>
                                   </div>
                                 </div>
@@ -309,12 +377,59 @@ const AccountsDetail = () => {
                                     available
                                   </p>
                                   <div className="my-auto">
-                                    <InfoCircleOutlined className="cursor-pointer" />
+                                    <Tooltip
+                                      title={`This is the amount available for withdrawal, please note initial capital/deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial capital/deposit but you can withdraw profits any time you want, after ${account?.locking_period} days you can withdraw your initial capital/deposit as well`}
+                                      color={"#FF4913"}
+                                      placement="top"
+                                      // key={color}
+                                    >
+                                      <InfoCircleOutlined className="cursor-pointer" />
+                                    </Tooltip>{" "}
                                   </div>
                                 </div>
                                 <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  ${Number(account.current_balance).toFixed(2)}
+                                  $
+                                  {(() => {
+                                    const createdAt = new Date(
+                                      account?.created_at
+                                    );
+                                    const today = new Date();
+                                    const daysSinceCreated = Math.floor(
+                                      (today - createdAt) /
+                                        (1000 * 60 * 60 * 24)
+                                    );
+                                    const lockingPeriod = Number(
+                                      account?.locking_period
+                                    );
+                                    const remainingDays =
+                                      lockingPeriod - daysSinceCreated;
+
+                                    const currentBalance = Number(
+                                      account?.current_balance
+                                    );
+                                    const amplified =
+                                      Number(account?.multiplier) *
+                                      Number(account?.starting_amount);
+                                    const startingAmount = Number(
+                                      account?.starting_amount
+                                    );
+
+                                    if (remainingDays <= 0) {
+                                      // Locking period completed
+                                      return (
+                                        currentBalance -
+                                        amplified +
+                                        startingAmount
+                                      ).toFixed(2);
+                                    } else {
+                                      // Locking period still active
+                                      return (
+                                        currentBalance - amplified
+                                      ).toFixed(2);
+                                    }
+                                  })()}
                                 </p>
+
                                 <div className="absolute bottom-3 left-0 w-full px-4">
                                   <button
                                     className=" GeistFont w-full bg-[#171717] text-white py-2 rounded-lg text-[18px] cursor-pointer"
@@ -463,6 +578,26 @@ const AccountsDetail = () => {
                         isCredentialsModel?.investor_password
                       );
                       messageApi.success("Investor password copied!");
+                    }}
+                    className="cursor-pointer pl-4"
+                  />
+                </div>
+              </div>
+
+              {/* Server */}
+              <div className="flex items-center gap-2">
+                <span className="text-[#FF4912] font-[500] min-w-[130px]">
+                  Server:
+                </span>
+                <div className="flex items-center w-full py-[5px] px-3 border border-[#EBEBEB] rounded-[8px]">
+                  <span className="flex-1">
+                    {/* {isCredentialsModel?.investor_password} */}{" "}
+                    TagMarkets-Server
+                  </span>
+                  <CopyOutlined
+                    onClick={() => {
+                      navigator.clipboard.writeText("TagMarkets - Server");
+                      messageApi.success("TagMarkets-Server copied!");
                     }}
                     className="cursor-pointer pl-4"
                   />

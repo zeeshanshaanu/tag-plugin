@@ -31,7 +31,7 @@ const LandingPage = () => {
           },
         }
       );
-      console.log(response?.data?.token);
+      // console.log(response?.data?.token);
       sessionStorage.setItem("token", response?.data?.token);
     } catch (error) {
       console.error(error?.response);
@@ -40,9 +40,8 @@ const LandingPage = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       GetNewToken();
-    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+    }, 5 * 60 * 1000);
 
-    // Optional: cleanup interval when component unmounts
     return () => clearInterval(interval);
   }, []);
 
