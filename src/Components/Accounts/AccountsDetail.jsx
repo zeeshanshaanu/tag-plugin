@@ -331,7 +331,7 @@ const AccountsDetail = () => {
                                             Number(account?.starting_amount)) /
                                           Number(account?.dd_limit)
                                         ).toFixed(2)}
-                                        %
+                                        
                                       </span>
                                     </p>
                                     <div className="my-auto sm:my-0 my-2">
