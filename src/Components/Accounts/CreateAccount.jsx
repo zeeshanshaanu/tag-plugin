@@ -33,15 +33,16 @@ const CreateAccount = () => {
           },
         }
       );
-      // console.log(response?.data);
-      messageApi.success("Account Created Successfully");
-      setLoading(false);
       sessionStorage.setItem("Refetch_Accounts", "true");
+
+      console.log(response?.data);
+      // messageApi.success("Account Created Successfully");
+      setLoading(false);
       setInputValue("");
       setIsModalOpen({
         isOpen: true,
-        title: "Your 12X account is now Ready for trading",
-        desc: "Please review your email for your login details, including your username and password. Alternatively, you can click the credentials button on your dashboard for quick access.",
+        title: "Your Amplify Account Is Now ready To Trade",
+        desc: "You will recieve an email shortly with your MT5 account credentials. Alternatively, you can click the credentials button on your dashboard for quicker access",
         buttonName: "Continue",
         status: "create account",
       });

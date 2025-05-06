@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import axios from "axios";
 import { message } from "antd";
+import NotificationModel from "./NotificationModel";
 ///////////////////////////////////////////////////////////////
 
 const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
   const Token = sessionStorage.getItem("token");
-
   if (!isModalOpen.isOpen) return null;
   const [Loading, setLoading] = useState(false);
   const [InputValue, setInputValue] = useState("");
-  const [messageApi, contextHolder] = message.useMessage();
-
+  const [NotifyModel, setNotifyModel] = useState({
+    Open: false,
+    title: "",
+    desc: "",
+    status: "",
+    buttonName: "",
+    IsSuccess: "",
+  });
   // console.log(isModalOpen);
 
   const handleOk = () => {
@@ -49,7 +55,17 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
           },
         }
       );
-      messageApi.success(response?.data?.message);
+      sessionStorage.setItem("Refetch_Accounts", "true");
+
+      setNotifyModel({
+        Open: true,
+        title: "Title...",
+        desc: "response?.data?.message",
+        buttonName: "Continue",
+        status: "create account",
+        IsSuccess: "success",
+      });
+
       setLoading(false);
       setInputValue("");
       setTimeout(() => {
@@ -57,9 +73,17 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
       }, 1000);
     } catch (error) {
       console.error(error?.response);
-      messageApi.error(
-        error?.response?.data?.detail || "Failed to process request"
-      );
+      setNotifyModel({
+        Open: true,
+        title: "Your Amplify Account Is Now ready To Trade",
+        desc: error?.response?.data?.detail || "Failed to process request",
+        buttonName: "Continue",
+        status: "create account",
+        IsSuccess: "failed",
+      });
+      // messageApi.error(
+      //   error?.response?.data?.detail || "Failed to process request"
+      // );
       setLoading(false);
     }
   };
@@ -135,7 +159,11 @@ const AccountModel = ({ setIsModalOpen, isModalOpen }) => {
           )}
         </div>
       </Modal>
-      {contextHolder}
+
+      <NotificationModel
+        setNotifyModel={setNotifyModel}
+        NotifyModel={NotifyModel}
+      />
     </div>
   );
 };
