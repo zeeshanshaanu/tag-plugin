@@ -77,7 +77,13 @@ const AccountsDetail = () => {
         }
       );
       // console.log(response.data);
-      setAccountDetails(response?.data?.data);
+      // setAccountDetails(response?.data?.data);
+      setAccountDetails(
+        response?.data?.data?.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
+      );
+
       setCount(response?.data?.total);
       // Calculate pages based on total
       // setAccountDetails({
@@ -317,93 +323,99 @@ const AccountsDetail = () => {
           </h1>
         </div>
         {/*  */}
-        {Loading ? (
+        {/* {Loading ? (
           <div className="flex justify-center items-center h-[100px] text-[#FF4913] text-[22px] font-[500]">
             Loading...
           </div>
         ) : (
-          <div className="rounded-xl w-full">
-            {/* Card Container */}
-            {AccountDetails?.length > 0 ? (
-              <>
-                <div>
-                  {AccountDetails?.map((account, index) => {
-                    return (
-                      <div key={index}>
-                        {/* Black Curvy Label */}
-                        <div className="mt-5 flex justify-between gap-2">
-                          <div className="GeistFont bg-black text-white text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10">
-                            Account {account?.login}&nbsp; •&nbsp; Created{" "}
-                            {account?.created_at?.split("T")[0]}
-                          </div>
-                          <div
-                            onClick={() =>
-                              setisCredentialsModel({
-                                isOpen: true,
-                                login: account?.login,
-                                master_password: account?.master_password,
-                                investor_password: account?.investor_password,
-                              })
-                            }
-                            className="GeistFont cursor-pointer bg-[#CAFD5D] text-[#171717] text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10"
-                          >
-                            Credentials
-                          </div>
+        )} */}
+        <div className="rounded-xl w-full">
+          {/* Card Container */}
+          {AccountDetails?.length > 0 ? (
+            <>
+              <div>
+                {AccountDetails?.map((account, index) => {
+                  return (
+                    <div key={index}>
+                      {/* Black Curvy Label */}
+                      <div className="mt-5 flex justify-between gap-2">
+                        <div className="GeistFont bg-black text-white text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10">
+                          Account {account?.login}&nbsp; •&nbsp; Created{" "}
+                          {account?.created_at?.split("T")[0]}
                         </div>
-                        <div className="bg-[#F5F5F5] p-2 rounded-[12px] mt-[-.8rem] relative z-20">
-                          <div className="grid grid-cols-1 lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-2 gap-2">
+                        <div
+                          onClick={() =>
+                            setisCredentialsModel({
+                              isOpen: true,
+                              login: account?.login,
+                              master_password: account?.master_password,
+                              investor_password: account?.investor_password,
+                            })
+                          }
+                          className="GeistFont cursor-pointer bg-[#CAFD5D] text-[#171717] text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10"
+                        >
+                          Credentials
+                        </div>
+                      </div>
+                      <div className="bg-[#F5F5F5] p-2 rounded-[12px] mt-[-.8rem] relative z-20">
+                        <div className="grid grid-cols-1 lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-2 gap-2">
+                          {/* Deposit && Amplified */}
+                          <div className="col-span-1">
                             {/* Deposit && Amplified */}
-                            <div className="col-span-1">
-                              {/* Deposit && Amplified */}
-                              <div className=" bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
-                                <p className="GeistFont text-[16px] text-[#171717] uppercase">
-                                  Deposit
-                                </p>
-                                <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  ${Number(account?.starting_amount).toFixed(2)}
-                                </p>
-                              </div>
-                              <div className=" mt-2 bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
-                                <p className="GeistFont text-[16px] text-[#171717] uppercase">
-                                  Amplified
-                                </p>
-                                <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                  {(() => {
-                                    const value =
-                                      Number(account?.multiplier) *
-                                      Number(account?.starting_amount);
-                                    const formattedValue =
-                                      Math.abs(value).toFixed(2);
-                                    return value < 0
-                                      ? `-$${formattedValue}`
-                                      : `$${formattedValue}`;
-                                  })()}
-                                </p>
+                            <div className=" bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
+                              <p className="GeistFont text-[16px] text-[#171717] uppercase">
+                                Deposit
+                              </p>
+                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                                ${Number(account?.starting_amount).toFixed(2)}
+                              </p>
+                            </div>
+                            <div className=" mt-2 bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
+                              <p className="GeistFont text-[16px] text-[#171717] uppercase">
+                                Amplified
+                              </p>
+                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                                {(() => {
+                                  const value =
+                                    Number(account?.multiplier) *
+                                    Number(account?.starting_amount);
+                                  const formattedValue =
+                                    Math.abs(value).toFixed(2);
+                                  return value < 0
+                                    ? `-$${formattedValue}`
+                                    : `$${formattedValue}`;
+                                })()}
+                              </p>
+                            </div>
+                          </div>
+                          {/* BALANCE */}
+                          <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
+                            <div className="flex justify-between">
+                              <p className="GeistFont text-[16px] text-[#171717] my-auto">
+                                BALANCE
+                              </p>
+                              <div className="my-auto">
+                                <Tooltip
+                                  title=" This is your current MT5 account balance "
+                                  color={"#FF4913"}
+                                  placement="top"
+                                  // key={color}
+                                >
+                                  <InfoCircleOutlined className="cursor-pointer" />
+                                </Tooltip>
                               </div>
                             </div>
-                            {/* BALANCE */}
-                            <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
-                              <div className="flex justify-between">
-                                <p className="GeistFont text-[16px] text-[#171717] my-auto">
-                                  BALANCE
-                                </p>
-                                <div className="my-auto">
-                                  <Tooltip
-                                    title=" This is your current MT5 account balance "
-                                    color={"#FF4913"}
-                                    placement="top"
-                                    // key={color}
-                                  >
-                                    <InfoCircleOutlined className="cursor-pointer" />
-                                  </Tooltip>
-                                </div>
-                              </div>
-                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                ${Number(account.current_balance).toFixed(2)}
-                              </p>
+                            <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                              ${Number(account.current_balance).toFixed(2)}
+                            </p>
 
-                              {/* Button Positioned at the Bottom */}
-                              <div className="absolute bottom-3 left-0 w-full px-4">
+                            {/* Button Positioned at the Bottom */}
+                            <div className="absolute bottom-3 left-0 w-full px-4">
+                              {showBG === "Deactivated" ? (
+                                <button className="GeistFont w-full bg-[#fcbfa6] text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                                  Top Up
+                                </button>
+                              ) : (
                                 <button
                                   onClick={() =>
                                     setIsModalOpen({
@@ -419,39 +431,45 @@ const AccountsDetail = () => {
                                 >
                                   Top Up
                                 </button>
+                              )}
+                            </div>
+                          </div>
+                          {/* PNL */}
+                          <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
+                            <div className="flex justify-between">
+                              <p className="GeistFont text-[16px] text-[#171717] my-auto">
+                                PNL
+                              </p>
+                              <div className="my-auto">
+                                <Tooltip
+                                  title=" This is your floating profit/loss"
+                                  color={"#FF4913"}
+                                  placement="top"
+                                  // key={color}
+                                >
+                                  <InfoCircleOutlined className="cursor-pointer" />
+                                </Tooltip>{" "}
                               </div>
                             </div>
-                            {/* PNL */}
-                            <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
-                              <div className="flex justify-between">
-                                <p className="GeistFont text-[16px] text-[#171717] my-auto">
-                                  PNL
-                                </p>
-                                <div className="my-auto">
-                                  <Tooltip
-                                    title=" This is your floating profit/loss"
-                                    color={"#FF4913"}
-                                    placement="top"
-                                    // key={color}
-                                  >
-                                    <InfoCircleOutlined className="cursor-pointer" />
-                                  </Tooltip>{" "}
-                                </div>
-                              </div>
-                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                {(() => {
-                                  const value =
-                                    Number(account?.current_equity) -
-                                    Number(account?.current_balance);
-                                  const formattedValue =
-                                    Math.abs(value).toFixed(2);
-                                  return value < 0
-                                    ? `-$${formattedValue}`
-                                    : `$${formattedValue}`;
-                                })()}
-                              </p>
+                            <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                              {(() => {
+                                const value =
+                                  Number(account?.current_equity) -
+                                  Number(account?.current_balance);
+                                const formattedValue =
+                                  Math.abs(value).toFixed(2);
+                                return value < 0
+                                  ? `-$${formattedValue}`
+                                  : `$${formattedValue}`;
+                              })()}
+                            </p>
 
-                              <div className="absolute bottom-3 left-0 w-full px-4">
+                            <div className="absolute bottom-3 left-0 w-full px-4">
+                              {showBG === "Deactivated" ? (
+                                <button className="GeistFont w-full bg-[#fcbfa6] text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                                  Upgrade
+                                </button>
+                              ) : (
                                 <button
                                   onClick={() =>
                                     setIsModalOpen({
@@ -468,158 +486,164 @@ const AccountsDetail = () => {
                                 >
                                   Upgrade
                                 </button>
+                              )}
+                            </div>
+                          </div>
+                          {/*  trading days */}
+                          <div className="GeistFont bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] ">
+                            <div className="flex justify-between">
+                              <p className="text-[16px] text-[#171717] my-auto uppercase">
+                                trading days
+                              </p>
+                              <div className="my-auto">
+                                <Tooltip
+                                  title="Days since first trade"
+                                  color={"#FF4913"}
+                                  placement="top"
+                                  // key={color}
+                                >
+                                  <InfoCircleOutlined className="cursor-pointer" />
+                                </Tooltip>{" "}
                               </div>
                             </div>
-                            {/*  trading days */}
-                            <div className="GeistFont bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] ">
-                              <div className="flex justify-between">
-                                <p className="text-[16px] text-[#171717] my-auto uppercase">
-                                  trading days
-                                </p>
-                                <div className="my-auto">
-                                  <Tooltip
-                                    title="Days since account creation"
-                                    color={"#FF4913"}
-                                    placement="top"
-                                    // key={color}
-                                  >
-                                    <InfoCircleOutlined className="cursor-pointer" />
-                                  </Tooltip>{" "}
-                                </div>
-                              </div>
-                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                {Math.floor(
-                                  (new Date() - new Date(account?.created_at)) /
-                                    (1000 * 60 * 60 * 24)
-                                )}{" "}
+
+                            <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                              {account?.first_trade_open_time
+                                ? Math.round(
+                                    (new Date() -
+                                      new Date(account.first_trade_open_time)) /
+                                      (1000 * 60 * 60 * 24)
+                                  )
+                                : 0}
+                            </p>
+                          </div>
+                          {/* Drawdown */}
+                          <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
+                            <div className="flex justify-between">
+                              <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
+                                Drawdown
                               </p>
+                              <div className="my-auto">
+                                <Tooltip
+                                  title="This is max drawdown allowed and your current drawdown, please refresh this page to fetch upto date drawdown values. Please Note: The displayed drawdown value includes commission per lot as well"
+                                  color={"#FF4913"}
+                                  placement="top"
+                                  // key={color}
+                                >
+                                  <InfoCircleOutlined className="cursor-pointer" />
+                                </Tooltip>{" "}
+                              </div>
                             </div>
-                            {/* Drawdown */}
-                            <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
-                              <div className="flex justify-between">
-                                <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
-                                  Drawdown
+                            <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                              {(() => {
+                                const value =
+                                  Number(account?.current_equity) -
+                                  Number(account?.current_balance);
+                                const formattedValue =
+                                  Math.abs(value).toFixed(2);
+                                return value < 0
+                                  ? `-$${formattedValue}`
+                                  : `$${formattedValue}`;
+                              })()}
+                            </p>
+                            <div className="absolute bottom-3 left-0 w-full px-4">
+                              <div className="w-full">
+                                <p className="text-[20px] font-[500]">
+                                  Max{" "}
+                                  <span className="font-[500]">
+                                    {(() => {
+                                      const value =
+                                        (Number(account?.multiplier) *
+                                          Number(account?.starting_amount)) /
+                                        Number(account?.dd_limit);
+                                      const formattedValue =
+                                        Math.abs(value).toFixed(2);
+                                      return value < 0
+                                        ? `-$${formattedValue}`
+                                        : `$${formattedValue}`;
+                                    })()}
+                                  </span>
                                 </p>
-                                <div className="my-auto">
-                                  <Tooltip
-                                    title="This is max drawdown allowed and your current drawdown, please refresh this page to fetch upto date drawdown values. Please Note: The displayed drawdown value includes commission per lot as well"
-                                    color={"#FF4913"}
-                                    placement="top"
-                                    // key={color}
-                                  >
-                                    <InfoCircleOutlined className="cursor-pointer" />
-                                  </Tooltip>{" "}
-                                </div>
-                              </div>
-                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                {(() => {
-                                  const value =
-                                    Number(account?.current_equity) -
-                                    Number(account?.current_balance);
-                                  const formattedValue =
-                                    Math.abs(value).toFixed(2);
-                                  return value < 0
-                                    ? `-$${formattedValue}`
-                                    : `$${formattedValue}`;
-                                })()}
-                              </p>
-                              <div className="absolute bottom-3 left-0 w-full px-4">
-                                <div className="w-full">
-                                  <p className="text-[20px] font-[500]">
-                                    Max{" "}
-                                    <span className="font-[500]">
-                                      {(() => {
-                                        const value =
-                                          (Number(account?.multiplier) *
-                                            Number(account?.starting_amount)) /
-                                          Number(account?.dd_limit);
-                                        const formattedValue =
-                                          Math.abs(value).toFixed(2);
-                                        return value < 0
-                                          ? `-$${formattedValue}`
-                                          : `$${formattedValue}`;
-                                      })()}
-                                    </span>
-                                  </p>
-                                  <div className="my-auto sm:my-0 my-2">
-                                    <Progress
-                                      percent={Math.min(
-                                        Math.abs(
-                                          Number(account?.current_equity) -
-                                            Number(account?.current_balance)
-                                        ).toFixed(2),
-                                        100
-                                      )}
-                                      strokeColor="#171717"
-                                      className="custom-progress"
-                                      showInfo={false}
-                                    />
-                                  </div>
+                                <div className="my-auto sm:my-0 my-2">
+                                  <Progress
+                                    percent={Math.min(
+                                      Math.abs(
+                                        Number(account?.current_equity) -
+                                          Number(account?.current_balance)
+                                      ).toFixed(2),
+                                      100
+                                    )}
+                                    strokeColor="#171717"
+                                    className="custom-progress"
+                                    showInfo={false}
+                                  />
                                 </div>
                               </div>
                             </div>
-                            {/* Available */}
-                            <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
-                              <div className="flex justify-between">
-                                <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
-                                  available
-                                </p>
-                                <div className="my-auto">
-                                  <Tooltip
-                                    title={`This is the amount available for withdrawal, please note initial capital/deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial capital/deposit but you can withdraw profits any time you want, after ${account?.locking_period} days you can withdraw your initial capital/deposit as well`}
-                                    color={"#FF4913"}
-                                    placement="top"
-                                    // key={color}
-                                  >
-                                    <InfoCircleOutlined className="cursor-pointer" />
-                                  </Tooltip>{" "}
-                                </div>
-                              </div>
-                              <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                                $
-                                {(() => {
-                                  const createdAt = new Date(
-                                    account?.created_at
-                                  );
-                                  const today = new Date();
-                                  const daysSinceCreated = Math.floor(
-                                    (today - createdAt) / (1000 * 60 * 60 * 24)
-                                  );
-                                  const lockingPeriod = Number(
-                                    account?.locking_period
-                                  );
-                                  const remainingDays =
-                                    lockingPeriod - daysSinceCreated;
-
-                                  const currentBalance = Number(
-                                    account?.current_balance
-                                  );
-                                  const amplified =
-                                    Number(account?.multiplier) *
-                                    Number(account?.starting_amount);
-                                  const startingAmount = Number(
-                                    account?.starting_amount
-                                  );
-
-                                  if (remainingDays <= 0) {
-                                    // Locking period completed
-                                    return Math.max(
-                                      currentBalance -
-                                        amplified +
-                                        startingAmount,
-                                      0
-                                    ).toFixed(2);
-                                  } else {
-                                    // Locking period still active
-                                    return Math.max(
-                                      currentBalance - amplified,
-                                      0
-                                    ).toFixed(2);
-                                  }
-                                })()}
+                          </div>
+                          {/* Available */}
+                          <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
+                            <div className="flex justify-between">
+                              <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
+                                available
                               </p>
+                              <div className="my-auto">
+                                <Tooltip
+                                  title={`This is the amount available for withdrawal, please note initial capital/deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial capital/deposit but you can withdraw profits any time you want, after ${account?.locking_period} days you can withdraw your initial capital/deposit as well`}
+                                  color={"#FF4913"}
+                                  placement="top"
+                                  // key={color}
+                                >
+                                  <InfoCircleOutlined className="cursor-pointer" />
+                                </Tooltip>{" "}
+                              </div>
+                            </div>
+                            <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
+                              $
+                              {(() => {
+                                const createdAt = new Date(account?.created_at);
+                                const today = new Date();
+                                const daysSinceCreated = Math.floor(
+                                  (today - createdAt) / (1000 * 60 * 60 * 24)
+                                );
+                                const lockingPeriod = Number(
+                                  account?.locking_period
+                                );
+                                const remainingDays =
+                                  lockingPeriod - daysSinceCreated;
 
-                              <div className="absolute bottom-3 left-0 w-full px-4">
+                                const currentBalance = Number(
+                                  account?.current_balance
+                                );
+                                const amplified =
+                                  Number(account?.multiplier) *
+                                  Number(account?.starting_amount);
+                                const startingAmount = Number(
+                                  account?.starting_amount
+                                );
+
+                                if (remainingDays <= 0) {
+                                  // Locking period completed
+                                  return Math.max(
+                                    currentBalance - amplified + startingAmount,
+                                    0
+                                  ).toFixed(2);
+                                } else {
+                                  // Locking period still active
+                                  return Math.max(
+                                    currentBalance - amplified,
+                                    0
+                                  ).toFixed(2);
+                                }
+                              })()}
+                            </p>
+
+                            <div className="absolute bottom-3 left-0 w-full px-4">
+                              {showBG === "Deactivated" ? (
+                                <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                                  Withdraw
+                                </button>
+                              ) : (
                                 <button
                                   className=" GeistFont w-full bg-[#171717] text-white py-2 rounded-lg text-[18px] cursor-pointer"
                                   onClick={() =>
@@ -634,67 +658,67 @@ const AccountsDetail = () => {
                                 >
                                   Withdraw
                                 </button>
-                              </div>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-                {/* Pagination */}
-                <div className="flex justify-end items-center space-x-2 mt-5">
-                  {/* Previous Button */}
-                  <button
-                    className={`p-2 rounded-[16px] ${
-                      currentPage <= 1 || Loading
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-black cursor-pointer"
-                    }`}
-                    onClick={prevPage}
-                    disabled={currentPage <= 1 || Loading}
-                  >
-                    <LeftOutlined className="text-lg" />
-                  </button>
-
-                  {/* Page Numbers */}
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => onPageChange(page)}
-                        className={`cursor-pointer w-[35px] h-[35px] flex items-center justify-center rounded-[8px] text-[16px] ${
-                          currentPage === page
-                            ? "bg-[#FF4912] text-white"
-                            : "text-[#171717]"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-
-                  {/* Next Button */}
-                  <button
-                    className={`p-2 rounded-[16px] ${
-                      currentPage >= totalPages || Loading
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-black cursor-pointer"
-                    }`}
-                    onClick={nextPage}
-                    disabled={currentPage >= totalPages || Loading}
-                  >
-                    <RightOutlined className="text-lg" />
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="flex justify-center items-center h-[100px] text-[#FF4913] text-[22px] font-[500]">
-                No Accounts Found.!
+                    </div>
+                  );
+                })}
               </div>
-            )}
-          </div>
-        )}
+              {/* Pagination */}
+              <div className="flex justify-end items-center space-x-2 mt-5">
+                {/* Previous Button */}
+                <button
+                  className={`p-2 rounded-[16px] ${
+                    currentPage <= 1 || Loading
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-black cursor-pointer"
+                  }`}
+                  onClick={prevPage}
+                  disabled={currentPage <= 1 || Loading}
+                >
+                  <LeftOutlined className="text-lg" />
+                </button>
+
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => onPageChange(page)}
+                      className={`cursor-pointer w-[35px] h-[35px] flex items-center justify-center rounded-[8px] text-[16px] ${
+                        currentPage === page
+                          ? "bg-[#FF4912] text-white"
+                          : "text-[#171717]"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+
+                {/* Next Button */}
+                <button
+                  className={`p-2 rounded-[16px] ${
+                    currentPage >= totalPages || Loading
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-black cursor-pointer"
+                  }`}
+                  onClick={nextPage}
+                  disabled={currentPage >= totalPages || Loading}
+                >
+                  <RightOutlined className="text-lg" />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-[100px] text-[#FF4913] text-[22px] font-[500]">
+              No Accounts Found.!
+            </div>
+          )}
+        </div>
       </div>
       {/* Credentials Model */}
       <div>
