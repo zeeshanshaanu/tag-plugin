@@ -7,16 +7,16 @@ import axios from "axios";
 // ////////////////////////////////////////////////////////////////////////
 const LandingPage = () => {
   const location = useLocation();
+  // Immediately check and store token on initial JS execution
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+  if (token && !sessionStorage.getItem("token")) {
+    sessionStorage.setItem("token", token);
+  }
 
   useEffect(() => {
     GetNewToken();
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (token) {
-      sessionStorage.setItem("token", token);
-      // console.log("🔐 Token from iframe URL:", token);
-    }
-  }, [location.search]);
+  }, []);
 
   const GetNewToken = async () => {
     try {

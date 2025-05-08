@@ -12,6 +12,7 @@ import NotificationModel from "../Models/NotificationModel";
 const AccountsDetail = () => {
   const Token = sessionStorage.getItem("token");
   const ApiRefetch = sessionStorage.getItem("Refetch_Accounts");
+  const [daysSinceFirstTrade, setDaysSinceFirstTrade] = useState({});
 
   const [showBG, setshowBG] = useState("Active");
   const [messageApi, contextHolder] = message.useMessage();
@@ -44,6 +45,8 @@ const AccountsDetail = () => {
   const [Count, setCount] = useState();
 
   const [AccountDetails, setAccountDetails] = useState([]);
+  const [TradingDays, setTradingDays] = useState({});
+
   const [Loading, setLoading] = useState(false);
 
   const ActiveAcc = "/users/accounts/active";
@@ -63,6 +66,7 @@ const AccountsDetail = () => {
       skip: newSkip,
     }));
   };
+
   const FetchAccounts = async () => {
     setLoading(true);
     try {
@@ -76,29 +80,34 @@ const AccountsDetail = () => {
           },
         }
       );
-      // console.log(response.data);
-      // setAccountDetails(response?.data?.data);
-      setAccountDetails(
-        response?.data?.data?.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        )
+
+      const sortedAccounts = response?.data?.data?.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
 
+      // Calculate days since first_trade_open_time for each account
+      const daysMap = {};
+      sortedAccounts.forEach((acc) => {
+        const days = acc?.first_trade_open_time
+          ? Math.round(
+              (new Date() - new Date(acc.first_trade_open_time)) /
+                (1000 * 60 * 60 * 24)
+            )
+          : 0;
+        daysMap[acc._id] = days;
+      });
+      setTradingDays(daysMap);
+
+      setAccountDetails(sortedAccounts);
       setCount(response?.data?.total);
-      // Calculate pages based on total
-      // setAccountDetails({
-      //   list: response?.data?.data || [],
-      //   overview: response?.data?.overview || {},
-      // });
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching profile:", error);
       setAccountDetails(null);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     FetchAccounts();
   }, [showBG, currentPage, ApiRefetch]);
@@ -172,7 +181,6 @@ const AccountsDetail = () => {
     CreateAccount: "/users/accounts/create",
   };
   const LoginData = isModalOpen.login;
-  // console.log(LoginData);
   const [AccUpdateLoading, setAccUpdateLoading] = useState(false);
 
   const HandleSubmit = async (e) => {
@@ -206,8 +214,9 @@ const AccountsDetail = () => {
           IsSuccess: true,
         });
       }, 300);
-
+      setIsModalOpen(false);
       setAccUpdateLoading(false);
+      setIsModalOpen(false);
       setInputValue("");
     } catch (error) {
       console.error(error?.response);
@@ -220,6 +229,7 @@ const AccountsDetail = () => {
           status: "create account",
           IsSuccess: false,
         });
+        setIsModalOpen(false);
       }, 300);
 
       setAccUpdateLoading(false);
@@ -335,8 +345,45 @@ const AccountsDetail = () => {
             <>
               <div>
                 {AccountDetails?.map((account, index) => {
+                  const firstTradeTime = account?.first_trade_open_time;
+                  const tradingDays = firstTradeTime
+                    ? Math.floor(
+                        (new Date() - new Date(firstTradeTime)) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    : 0;
+
+                  // Calculate availableBalance
+                  const createdAt = new Date(account?.created_at);
+                  const today = new Date();
+                  const daysSinceCreated = Math.floor(
+                    (today - createdAt) / (1000 * 60 * 60 * 24)
+                  );
+                  const lockingPeriod = Number(account?.locking_period);
+
+                  const remainingDays = lockingPeriod - daysSinceCreated;
+
+                  const currentBalance = Number(account?.current_balance);
+                  const amplified =
+                    Number(account?.multiplier) *
+                    Number(account?.starting_amount);
+
+                  const startingAmount = Number(account?.starting_amount);
+
+                  const availableBalance =
+                    remainingDays <= 0
+                      ? Math.max(currentBalance - amplified + startingAmount, 0)
+                      : Math.max(currentBalance - amplified, 0);
+
+                  console.log({
+                    showBG,
+                    tradingDays,
+                    availableBalance,
+                  });
+
                   return (
                     <div key={index}>
+                      {/* Black Curvy Label */}
                       {/* Black Curvy Label */}
                       <div className="mt-5 flex justify-between gap-2">
                         <div className="GeistFont bg-black text-white text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10">
@@ -360,8 +407,8 @@ const AccountsDetail = () => {
                       <div className="bg-[#F5F5F5] p-2 rounded-[12px] mt-[-.8rem] relative z-20">
                         <div className="grid grid-cols-1 lg:grid-cols-6 md:grid-cols-3 sm:grid-cols-2 gap-2">
                           {/* Deposit && Amplified */}
+                          {/* Deposit && Amplified */}
                           <div className="col-span-1">
-                            {/* Deposit && Amplified */}
                             <div className=" bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] h-[110px]">
                               <p className="GeistFont text-[16px] text-[#171717] uppercase">
                                 Deposit
@@ -388,6 +435,7 @@ const AccountsDetail = () => {
                               </p>
                             </div>
                           </div>
+                          {/* BALANCE */}
                           {/* BALANCE */}
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
@@ -434,6 +482,7 @@ const AccountsDetail = () => {
                               )}
                             </div>
                           </div>
+                          {/* PNL */}
                           {/* PNL */}
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
@@ -490,6 +539,7 @@ const AccountsDetail = () => {
                             </div>
                           </div>
                           {/*  trading days */}
+                          {/*  trading days */}
                           <div className="GeistFont bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] ">
                             <div className="flex justify-between">
                               <p className="text-[16px] text-[#171717] my-auto uppercase">
@@ -517,6 +567,7 @@ const AccountsDetail = () => {
                                 : 0}
                             </p>
                           </div>
+                          {/* Drawdown */}
                           {/* Drawdown */}
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
@@ -582,6 +633,7 @@ const AccountsDetail = () => {
                             </div>
                           </div>
                           {/* Available */}
+                          {/* Available */}
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
                               <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
@@ -636,16 +688,20 @@ const AccountsDetail = () => {
                                   ).toFixed(2);
                                 }
                               })()}
+                              {/* {availableBalance} */}
                             </p>
-
                             <div className="absolute bottom-3 left-0 w-full px-4">
-                              {showBG === "Deactivated" ? (
+                              {tradingDays === 0 && availableBalance <= 0 ? (
+                                <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                                  Withdraw
+                                </button>
+                              ) : showBG === "Deactivated" ? (
                                 <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Withdraw
                                 </button>
                               ) : (
                                 <button
-                                  className=" GeistFont w-full bg-[#171717] text-white py-2 rounded-lg text-[18px] cursor-pointer"
+                                  className="GeistFont w-full bg-[#171717] text-white py-2 rounded-lg text-[18px] cursor-pointer"
                                   onClick={() =>
                                     setIsModalOpen({
                                       isOpen: true,
@@ -893,7 +949,6 @@ const AccountsDetail = () => {
           </div>
         </Modal>
       </div>
-
       <NotificationModel
         setNotifyModel={setNotifyModel}
         NotifyModel={NotifyModel}
