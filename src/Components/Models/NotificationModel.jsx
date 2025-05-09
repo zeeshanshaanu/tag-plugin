@@ -39,7 +39,7 @@ const NotificationModel = ({ setNotifyModel, NotifyModel }) => {
             <button
               onClick={() => setNotifyModel({ isOpen: false })}
               // onClick={() => HandleSubmit()}
-              className="w-full bg-[#FF4912] text-white py-2 rounded-lg text-[18px] cursor-pointer"
+              className="w-full bg-[#CAFA5E] text-black py-2 rounded-lg text-[18px] cursor-pointer"
             >
               {NotifyModel.buttonName}
             </button>

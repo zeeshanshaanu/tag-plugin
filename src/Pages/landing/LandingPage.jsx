@@ -14,6 +14,11 @@ const LandingPage = () => {
     sessionStorage.setItem("token", token);
   }
 
+  if (token) {
+    // Always update sessionStorage with the latest token from the URL
+    sessionStorage.setItem("token", token);
+  }
+
   useEffect(() => {
     GetNewToken();
   }, []);

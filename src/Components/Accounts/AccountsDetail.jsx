@@ -23,7 +23,10 @@ const AccountsDetail = () => {
     desc: "",
     status: "",
     login: "",
+    Profitvalue: "",
   });
+  // console.log(isModalOpen?.Profitvalue);
+
   const [NotifyModel, setNotifyModel] = useState({
     Open: false,
     title: "",
@@ -265,7 +268,7 @@ const AccountsDetail = () => {
               <div>
                 {CreateACCLoading ? (
                   <p
-                    className={`border-[1px] GeistFont border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px] bg-[#FF1912] cursor-wait`}
+                    className={`border-[1px] GeistFont border-[#CAFA5E] py-3 lg:px-[30px] px-[15px] text-black rounded-[12px] bg-[#CAFA5E] cursor-wait`}
                   >
                     Loading...
                   </p>
@@ -273,8 +276,8 @@ const AccountsDetail = () => {
                   <button
                     type="submit"
                     disabled={CreateACCLoading}
-                    className={`border-[1px] GeistFont border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px]
-                  bg-[#FF4912] cursor-pointer`}
+                    className={`border-[1px] GeistFont border-[#CAFA5E] py-3 lg:px-[30px] px-[15px] text-black rounded-[12px]
+                  bg-[#CAFA5E] cursor-pointer`}
                   >
                     Create
                   </button>
@@ -311,7 +314,7 @@ const AccountsDetail = () => {
             </h4>
           </div>
 
-          <p className="mt-4 text-[14px] text-[#171717]">View more details</p>
+          {/* <p className="mt-4 text-[14px] text-[#171717]">View more details</p> */}
         </div>
       </div>
 
@@ -320,7 +323,7 @@ const AccountsDetail = () => {
           <h1
             onClick={() => setshowBG("Active")}
             className={` font-[400] cursor-pointer my-auto w-[180px] text-center py-[8px] rounded-[12px] font-medium text-[#171717]
-                             ${showBG === "Active" && "bg-[#FFFFFF]  "}`}
+                             ${showBG === "Active" && "bg-[#FFFFFF]"}`}
           >
             Active
           </h1>
@@ -334,7 +337,7 @@ const AccountsDetail = () => {
         </div>
         {/*  */}
         {/* {Loading ? (
-          <div className="flex justify-center items-center h-[100px] text-[#FF4913] text-[22px] font-[500]">
+          <div className="flex justify-center items-center h-[100px] text-[#F5F5F5] text-[22px] font-[500]">
             Loading...
           </div>
         ) : (
@@ -353,33 +356,55 @@ const AccountsDetail = () => {
                       )
                     : 0;
 
+                  // CALCULATE Profit value
+                  // CALCULATE Profit value
+                  // CALCULATE Profit value
+                  // const Profitvalue =
+                  //   Number(account?.current_balance) -
+                  //   Number(account?.multiplier) *
+                  //     Number(account?.starting_amount);
+
                   // Calculate availableBalance
+                  // Calculate availableBalance
+                  // Calculate availableBalance
+                  const startingAmount = Number(account?.starting_amount);
+                  const multiplier = Number(account?.multiplier);
+                  const currentBalance = Number(account?.current_balance);
                   const createdAt = new Date(account?.created_at);
                   const today = new Date();
+                  const lockingPeriod = Number(account?.locking_period);
+                  // Calculate days since account was created
                   const daysSinceCreated = Math.floor(
                     (today - createdAt) / (1000 * 60 * 60 * 24)
                   );
-                  const lockingPeriod = Number(account?.locking_period);
+                  // console.log("daysSinceCreated--->>", daysSinceCreated);
 
-                  const remainingDays = lockingPeriod - daysSinceCreated;
+                  // CALCULATE Remaining Days
+                  const RemainingDays = lockingPeriod - daysSinceCreated;
+                  // console.log("RemainingDays->>", RemainingDays);
 
-                  const currentBalance = Number(account?.current_balance);
-                  const amplified =
-                    Number(account?.multiplier) *
-                    Number(account?.starting_amount);
+                  const Profitvalue =
+                    currentBalance - multiplier * startingAmount;
 
-                  const startingAmount = Number(account?.starting_amount);
+                  const formattedProfit =
+                    Profitvalue < 0
+                      ? `-$${Math.abs(Profitvalue).toFixed(2)}`
+                      : `$${Profitvalue.toFixed(2)}`;
+
+                  const MonthEnd = Profitvalue + startingAmount;
 
                   const availableBalance =
-                    remainingDays <= 0
-                      ? Math.max(currentBalance - amplified + startingAmount, 0)
-                      : Math.max(currentBalance - amplified, 0);
+                    RemainingDays > 0
+                      ? Profitvalue < 0
+                        ? 0
+                        : Profitvalue
+                      : MonthEnd;
+                  // console.log("availableBalance--->>", availableBalance);
 
-                  console.log({
-                    showBG,
-                    tradingDays,
-                    availableBalance,
-                  });
+                  const canWithdraw =
+                    tradingDays > 0 &&
+                    showBG !== "Deactivated" &&
+                    availableBalance > 0;
 
                   return (
                     <div key={index}>
@@ -388,7 +413,15 @@ const AccountsDetail = () => {
                       <div className="mt-5 flex justify-between gap-2">
                         <div className="GeistFont bg-black text-white text-[16px] px-3 pb-5 pt-2 rounded-t-[16px] inline-block inline-block relative z-10">
                           Account {account?.login}&nbsp; •&nbsp; Created{" "}
-                          {account?.created_at?.split("T")[0]}
+                          {/* {account?.created_at?.split("T")[0]} */}
+                          {new Date(account?.created_at).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
                         </div>
                         <div
                           onClick={() =>
@@ -444,10 +477,11 @@ const AccountsDetail = () => {
                               </p>
                               <div className="my-auto">
                                 <Tooltip
+                                  style={{ color: "black" }}
                                   title=" This is your current MT5 account balance "
-                                  color={"#FF4913"}
+                                  color={"#F5F5F5"}
                                   placement="top"
-                                  // key={color}
+                                  overlayInnerStyle={{ color: "black" }}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
                                 </Tooltip>
@@ -460,7 +494,7 @@ const AccountsDetail = () => {
                             {/* Button Positioned at the Bottom */}
                             <div className="absolute bottom-3 left-0 w-full px-4">
                               {showBG === "Deactivated" ? (
-                                <button className="GeistFont w-full bg-[#fcbfa6] text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                                <button className="GeistFont w-full bg-[#CAFA5E] opacity-50 text-black py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Top Up
                                 </button>
                               ) : (
@@ -475,25 +509,27 @@ const AccountsDetail = () => {
                                       login: account.login,
                                     })
                                   }
-                                  className="GeistFont w-full bg-[#FF4912] text-white py-2 rounded-lg text-[18px] cursor-pointer"
+                                  className="GeistFont w-full bg-[#CAFA5E] text-black py-2 rounded-lg text-[18px] cursor-pointer"
                                 >
                                   Top Up
                                 </button>
                               )}
                             </div>
                           </div>
-                          {/* PNL */}
-                          {/* PNL */}
+                          {/* Profit */}
+                          {/* Profit */}
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
-                              <p className="GeistFont text-[16px] text-[#171717] my-auto">
-                                PNL
+                              <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
+                                Profit
                               </p>
                               <div className="my-auto">
                                 <Tooltip
                                   title=" This is your floating profit/loss"
-                                  color={"#FF4913"}
+                                  color={"#F5F5F5"}
                                   placement="top"
+                                  overlayInnerStyle={{ color: "black" }}
+
                                   // key={color}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
@@ -501,21 +537,30 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {(() => {
+                              {/* {(() => {
                                 const value =
-                                  Number(account?.current_equity) -
-                                  Number(account?.current_balance);
+                                  Number(account?.current_balance) -
+                                  Number(account?.multiplier) *
+                                    Number(account?.starting_amount);
+                                // const value =
+                                //   Number(account?.current_equity) -
+                                //   Number(account?.current_balance);
                                 const formattedValue =
                                   Math.abs(value).toFixed(2);
                                 return value < 0
                                   ? `-$${formattedValue}`
                                   : `$${formattedValue}`;
-                              })()}
+                              })()} */}
+
+                              {/* {Profitvalue < 0
+                                ? `$${Profitvalue.toFixed(2)}`
+                                : `$${Profitvalue.toFixed(2)}`} */}
+                              {formattedProfit}
                             </p>
 
                             <div className="absolute bottom-3 left-0 w-full px-4">
-                              {showBG === "Deactivated" ? (
-                                <button className="GeistFont w-full bg-[#fcbfa6] text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
+                              {showBG === "Deactivated" || Profitvalue < 50 ? (
+                                <button className="GeistFont w-full bg-[#CAFA5E] opacity-50 text-black py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Upgrade
                                 </button>
                               ) : (
@@ -531,7 +576,7 @@ const AccountsDetail = () => {
                                       login: account.login,
                                     })
                                   }
-                                  className="GeistFont w-full bg-[#FF4912] text-white py-2 rounded-lg text-[18px] cursor-pointer"
+                                  className="GeistFont w-full bg-[#CAFA5E] text-black py-2 rounded-lg text-[18px] cursor-pointer"
                                 >
                                   Upgrade
                                 </button>
@@ -548,9 +593,10 @@ const AccountsDetail = () => {
                               <div className="my-auto">
                                 <Tooltip
                                   title="Days since first trade"
-                                  color={"#FF4913"}
+                                  color={"#F5F5F5"}
                                   placement="top"
                                   // key={color}
+                                  overlayInnerStyle={{ color: "black" }}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
                                 </Tooltip>{" "}
@@ -572,13 +618,15 @@ const AccountsDetail = () => {
                           <div className="bg-white border-[1px] border-[#EBEBEB] p-[16px] rounded-[16px] relative min-h-[200px]">
                             <div className="flex justify-between">
                               <p className="GeistFont text-[16px] text-[#171717] my-auto uppercase">
-                                Drawdown
+                                equity
                               </p>
                               <div className="my-auto">
                                 <Tooltip
-                                  title="This is max drawdown allowed and your current drawdown, please refresh this page to fetch upto date drawdown values. Please Note: The displayed drawdown value includes commission per lot as well"
-                                  color={"#FF4913"}
+                                  title="This is your current floating equity. If your equity level drops below your breach level your account will be deactivated."
+                                  color={"#F5F5F5"}
                                   placement="top"
+                                  overlayInnerStyle={{ color: "black" }}
+
                                   // key={color}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
@@ -586,7 +634,8 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {(() => {
+                              {account?.current_equity}
+                              {/* {(() => {
                                 const value =
                                   Number(account?.current_equity) -
                                   Number(account?.current_balance);
@@ -595,18 +644,26 @@ const AccountsDetail = () => {
                                 return value < 0
                                   ? `-$${formattedValue}`
                                   : `$${formattedValue}`;
-                              })()}
+                              })()} */}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
                               <div className="w-full">
-                                <p className="text-[20px] font-[500]">
-                                  Max{" "}
+                                <p className="text-[16px] font-[500]">
+                                  Breach Level:{" "}
                                   <span className="font-[500]">
+                                    {/* starting_amount */}
+                                    &nbsp;
                                     {(() => {
+                                      // const value =
+                                      //   ((Number(account?.multiplier) *
+                                      //     Number(account?.starting_amount)) /
+                                      //   90);
                                       const value =
-                                        (Number(account?.multiplier) *
-                                          Number(account?.starting_amount)) /
-                                        Number(account?.dd_limit);
+                                        Number(account.multiplier) *
+                                        Number(account.starting_amount) *
+                                        ((100 - Number(account.dd_limit)) /
+                                          100);
+
                                       const formattedValue =
                                         Math.abs(value).toFixed(2);
                                       return value < 0
@@ -615,19 +672,50 @@ const AccountsDetail = () => {
                                     })()}
                                   </span>
                                 </p>
+
                                 <div className="my-auto sm:my-0 my-2">
-                                  <Progress
-                                    percent={Math.min(
-                                      Math.abs(
-                                        Number(account?.current_equity) -
-                                          Number(account?.current_balance)
-                                      ).toFixed(2),
-                                      100
-                                    )}
-                                    strokeColor="#171717"
-                                    className="custom-progress"
-                                    showInfo={false}
-                                  />
+                                  <div className="my-auto sm:my-0 my-2">
+                                    <Progress
+                                      percent={(() => {
+                                        const equity = Number(
+                                          account?.current_equity
+                                        );
+                                        const multiplier = Number(
+                                          account?.multiplier
+                                        );
+                                        const startingAmount = Number(
+                                          account?.starting_amount
+                                        );
+                                        const ddLimit = Number(
+                                          account?.dd_limit
+                                        );
+
+                                        // total exposure (100% safe level)
+                                        const totalExposure =
+                                          multiplier * startingAmount;
+                                        // breach threshold (when you want full highlight)
+                                        const breachLevel =
+                                          totalExposure *
+                                          ((100 - ddLimit) / 100);
+
+                                        // how far we’ve fallen from full exposure towards breach
+                                        const rawProgress =
+                                          (totalExposure - equity) /
+                                          (totalExposure - breachLevel);
+
+                                        // clamp 0–1
+                                        const clamped = Math.max(
+                                          0,
+                                          Math.min(1, rawProgress)
+                                        );
+
+                                        return Math.round(clamped * 100);
+                                      })()}
+                                      strokeColor="#171717"
+                                      className="custom-progress"
+                                      showInfo={false}
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -642,8 +730,10 @@ const AccountsDetail = () => {
                               <div className="my-auto">
                                 <Tooltip
                                   title={`This is the amount available for withdrawal, please note initial capital/deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial capital/deposit but you can withdraw profits any time you want, after ${account?.locking_period} days you can withdraw your initial capital/deposit as well`}
-                                  color={"#FF4913"}
+                                  color={"#F5F5F5"}
                                   placement="top"
+                                  overlayInnerStyle={{ color: "black" }}
+
                                   // key={color}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
@@ -652,7 +742,7 @@ const AccountsDetail = () => {
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
                               $
-                              {(() => {
+                              {/* {(() => {
                                 const createdAt = new Date(account?.created_at);
                                 const today = new Date();
                                 const daysSinceCreated = Math.floor(
@@ -687,11 +777,19 @@ const AccountsDetail = () => {
                                     0
                                   ).toFixed(2);
                                 }
-                              })()}
-                              {/* {availableBalance} */}
+                              })()} */}
+                              {/* {RemainingDays >= 0 ? (
+                                <>{MonthEnd.toFixed(2)}</>
+                              ) : Profitvalue <= 0 ? (
+                                0
+                              ) : (
+                                <>{Profitvalue.toFixed(2)}</>
+                              )} */}
+                              {availableBalance.toFixed(2)}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
-                              {tradingDays === 0 && availableBalance <= 0 ? (
+                              {/* {tradingDays === 0 && availableBalance === 0 ? ( */}
+                              {availableBalance === 0 ? (
                                 <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Withdraw
                                 </button>
@@ -709,6 +807,7 @@ const AccountsDetail = () => {
                                       buttonName: "Withdraw",
                                       status: "Withdraw",
                                       login: account.login,
+                                      Profitvalue: Profitvalue,
                                     })
                                   }
                                 >
@@ -746,7 +845,7 @@ const AccountsDetail = () => {
                       onClick={() => onPageChange(page)}
                       className={`cursor-pointer w-[35px] h-[35px] flex items-center justify-center rounded-[8px] text-[16px] ${
                         currentPage === page
-                          ? "bg-[#FF4912] text-white"
+                          ? "bg-[#CAFA5E] text-black"
                           : "text-[#171717]"
                       }`}
                     >
@@ -770,8 +869,8 @@ const AccountsDetail = () => {
               </div>
             </>
           ) : (
-            <div className="flex justify-center items-center h-[100px] text-[#FF4913] text-[22px] font-[500]">
-              No Accounts Found.!
+            <div className="flex justify-center items-center h-[100px] text-[#F5F5F5] text-[22px] font-[500]">
+              No Accounts
             </div>
           )}
         </div>
@@ -795,7 +894,7 @@ const AccountsDetail = () => {
             <div className="mt-5 space-y-4">
               {/* Account# */}
               <div className="flex items-center gap-2">
-                <span className="text-[#FF4912] font-[500] min-w-[130px]">
+                <span className="text-[#0000000] font-[500] min-w-[130px]">
                   Account#:
                 </span>
                 <div className="flex items-center w-full py-[5px] px-3 border border-[#EBEBEB] rounded-[8px]">
@@ -812,7 +911,7 @@ const AccountsDetail = () => {
 
               {/* Master Password */}
               <div className="flex items-center gap-2">
-                <span className="text-[#FF4912] font-[500] min-w-[130px]">
+                <span className="text-[#0000000] font-[500] min-w-[130px]">
                   Master Password:
                 </span>
                 <div className="flex items-center w-full py-[5px] px-3 border border-[#EBEBEB] rounded-[8px]">
@@ -833,7 +932,7 @@ const AccountsDetail = () => {
 
               {/* Investor Password */}
               <div className="flex items-center gap-2">
-                <span className="text-[#FF4912] font-[500] min-w-[130px]">
+                <span className="text-[#0000000] font-[500] min-w-[130px]">
                   Investor Password:
                 </span>
                 <div className="flex items-center w-full py-[5px] px-3 border border-[#EBEBEB] rounded-[8px]">
@@ -854,7 +953,7 @@ const AccountsDetail = () => {
 
               {/* Server */}
               <div className="flex items-center gap-2">
-                <span className="text-[#FF4912] font-[500] min-w-[130px]">
+                <span className="text-[#0000000] font-[500] min-w-[130px]">
                   Server:
                 </span>
                 <div className="flex items-center w-full py-[5px] px-3 border border-[#EBEBEB] rounded-[8px]">
@@ -905,7 +1004,7 @@ const AccountsDetail = () => {
                 <button
                   onClick={() => setIsModalOpen({ isOpen: false })}
                   // onClick={() => HandleSubmit()}
-                  className="w-full bg-[#FF4912] text-white py-2 rounded-lg text-[18px] cursor-pointer"
+                  className="w-full bg-[#0000000] text-white py-2 rounded-lg text-[18px] cursor-pointer"
                 >
                   {isModalOpen.buttonName}
                 </button>
@@ -917,26 +1016,33 @@ const AccountsDetail = () => {
                     <input
                       type="number"
                       min={50}
-                      max={10000}
+                      max={Number(isModalOpen?.Profitvalue).toFixed(2)}
                       required
                       value={InputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder={isModalOpen.status}
                       className="w-full p-3 border-[1px] border-[#EBEBEB] rounded-[8px]"
                     />
-                    <span className=" left-[1px] top-[53px] text-[14px] text-[#171717]">
-                      Min $50
-                    </span>
+                    {isModalOpen?.status === "Withdraw" ? (
+                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                        Available For Withdrawal: $
+                        {Number(isModalOpen?.Profitvalue).toFixed(2)}
+                      </span>
+                    ) : (
+                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                        Min $50
+                      </span>
+                    )}
                   </div>
                   <div>
                     <button
                       type="submit"
                       disabled={Loading}
-                      className={`GeistFont border-[1px] border-[#FF4912] py-3 lg:px-[30px] px-[15px] text-white rounded-[12px]
+                      className={`GeistFont border-[1px]  bg-[#CAFA5E] text-black border-[#CAFA5E] py-3 lg:px-[30px] px-[15px] rounded-[12px]
                 ${
                   AccUpdateLoading
-                    ? "bg-[#FF1912] cursor-wait"
-                    : "bg-[#FF4912] cursor-pointer"
+                    ? "opacity-50 cursor-wait"
+                    : "opacity-100 cursor-pointer"
                 }
                 `}
                     >
