@@ -525,7 +525,7 @@ const AccountsDetail = () => {
                               </p>
                               <div className="my-auto">
                                 <Tooltip
-                                  title=" This is your floating profit/loss"
+                                  title="This is your closed profit. Use your profits to upgrade your amplify account. Please note min trading days is reset to 0"
                                   color={"#F5F5F5"}
                                   placement="top"
                                   overlayInnerStyle={{ color: "black" }}
@@ -634,7 +634,7 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {account?.current_equity}
+                              ${account?.current_equity}
                               {/* {(() => {
                                 const value =
                                   Number(account?.current_equity) -
@@ -729,7 +729,7 @@ const AccountsDetail = () => {
                               </p>
                               <div className="my-auto">
                                 <Tooltip
-                                  title={`This is the amount available for withdrawal, please note initial capital/deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial capital/deposit but you can withdraw profits any time you want, after ${account?.locking_period} days you can withdraw your initial capital/deposit as well`}
+                                  title={`This is the amount available for withdrawal, please note initial deposit has a ${account?.locking_period} days locking period, during this time you won't be able to withdraw initial deposit but you can withdraw profits any time you want. After ${account?.locking_period} days you may withdraw your full deposit capital if you wish.`}
                                   color={"#F5F5F5"}
                                   placement="top"
                                   overlayInnerStyle={{ color: "black" }}
@@ -803,7 +803,7 @@ const AccountsDetail = () => {
                                   onClick={() =>
                                     setIsModalOpen({
                                       isOpen: true,
-                                      title: "Withdraw your trading profits",
+                                      title: "Withdraw",
                                       buttonName: "Withdraw",
                                       status: "Withdraw",
                                       login: account.login,
@@ -1015,7 +1015,7 @@ const AccountsDetail = () => {
                   <div className="w-full">
                     <input
                       type="number"
-                      min={50}
+                      min={1}
                       max={Number(isModalOpen?.Profitvalue).toFixed(2)}
                       required
                       value={InputValue}
@@ -1029,9 +1029,10 @@ const AccountsDetail = () => {
                         {Number(isModalOpen?.Profitvalue).toFixed(2)}
                       </span>
                     ) : (
-                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
-                        Min $50
-                      </span>
+                      null
+                      // <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                      //   Min $50
+                      // </span>
                     )}
                   </div>
                   <div>
