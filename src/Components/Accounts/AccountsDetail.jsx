@@ -348,38 +348,29 @@ const AccountsDetail = () => {
             <>
               <div>
                 {AccountDetails?.map((account, index) => {
-                  const firstTradeTime = account?.first_trade_open_time;
-                  const tradingDays = firstTradeTime
-                    ? Math.floor(
-                        (new Date() - new Date(firstTradeTime)) /
-                          (1000 * 60 * 60 * 24)
-                      )
-                    : 0;
-
-                  // CALCULATE Profit value
-                  // CALCULATE Profit value
-                  // CALCULATE Profit value
-                  // const Profitvalue =
-                  //   Number(account?.current_balance) -
-                  //   Number(account?.multiplier) *
-                  //     Number(account?.starting_amount);
-
-                  // Calculate availableBalance
-                  // Calculate availableBalance
                   // Calculate availableBalance
                   const startingAmount = Number(account?.starting_amount);
                   const multiplier = Number(account?.multiplier);
                   const currentBalance = Number(account?.current_balance);
                   const createdAt = new Date(account?.created_at);
                   const today = new Date();
+
+                  const TradingDays = account?.first_trade_open_time
+                    ? Math.round(
+                        (new Date() - new Date(account.first_trade_open_time)) /
+                          (1000 * 60 * 60 * 24)
+                      )
+                    : 0;
+                  // console.log("TradingDays--->>", TradingDays);
+
                   const lockingPeriod = Number(account?.locking_period);
                   // Calculate days since account was created
                   const daysSinceCreated = Math.floor(
                     (today - createdAt) / (1000 * 60 * 60 * 24)
                   );
                   // console.log("daysSinceCreated--->>", daysSinceCreated);
-
                   // CALCULATE Remaining Days
+
                   const RemainingDays = lockingPeriod - daysSinceCreated;
                   // console.log("RemainingDays->>", RemainingDays);
 
@@ -392,19 +383,11 @@ const AccountsDetail = () => {
                       : `$${Profitvalue.toFixed(2)}`;
 
                   const MonthEnd = Profitvalue + startingAmount;
+                  // console.log("MonthEnd-->>", MonthEnd);
 
                   const availableBalance =
-                    RemainingDays > 0
-                      ? Profitvalue < 0
-                        ? 0
-                        : Profitvalue
-                      : MonthEnd;
+                    TradingDays > 30 ? MonthEnd : Profitvalue;
                   // console.log("availableBalance--->>", availableBalance);
-
-                  const canWithdraw =
-                    tradingDays > 0 &&
-                    showBG !== "Deactivated" &&
-                    availableBalance > 0;
 
                   return (
                     <div key={index}>
@@ -754,37 +737,18 @@ const AccountsDetail = () => {
                                 const remainingDays =
                                   lockingPeriod - daysSinceCreated;
 
-                                const currentBalance = Number(
-                                  account?.current_balance
-                                );
-                                const amplified =
-                                  Number(account?.multiplier) *
-                                  Number(account?.starting_amount);
-                                const startingAmount = Number(
-                                  account?.starting_amount
-                                );
-
                                 if (remainingDays <= 0) {
                                   // Locking period completed
                                   return Math.max(
-                                    currentBalance - amplified + startingAmount,
+                                    Profitvalue + startingAmount,
                                     0
                                   ).toFixed(2);
                                 } else {
                                   // Locking period still active
-                                  return Math.max(
-                                    currentBalance - amplified,
-                                    0
-                                  ).toFixed(2);
+                                  return Math.max(Profitvalue, 0).toFixed(2);
                                 }
                               })()} */}
-                              {/* {RemainingDays >= 0 ? (
-                                <>{MonthEnd.toFixed(2)}</>
-                              ) : Profitvalue <= 0 ? (
-                                0
-                              ) : (
-                                <>{Profitvalue.toFixed(2)}</>
-                              )} */}
+                              {/* {MonthEnd} */}
                               {availableBalance.toFixed(2)}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
@@ -807,7 +771,7 @@ const AccountsDetail = () => {
                                       buttonName: "Withdraw",
                                       status: "Withdraw",
                                       login: account.login,
-                                      Profitvalue: Profitvalue,
+                                      Profitvalue: availableBalance,
                                     })
                                   }
                                 >
@@ -1023,17 +987,17 @@ const AccountsDetail = () => {
                       placeholder={isModalOpen.status}
                       className="w-full p-3 border-[1px] border-[#EBEBEB] rounded-[8px]"
                     />
-                    {isModalOpen?.status === "Withdraw" ? (
-                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
-                        Available For Withdrawal: $
-                        {Number(isModalOpen?.Profitvalue).toFixed(2)}
-                      </span>
-                    ) : (
-                      null
+                    {
+                      isModalOpen?.status === "Withdraw" ? (
+                        <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                          Available For Withdrawal: $
+                          {Number(isModalOpen?.Profitvalue).toFixed(2)}
+                        </span>
+                      ) : null
                       // <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
                       //   Min $50
                       // </span>
-                    )}
+                    }
                   </div>
                   <div>
                     <button
