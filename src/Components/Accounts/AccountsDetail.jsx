@@ -120,6 +120,25 @@ const AccountsDetail = () => {
   const [InputValue, setInputValue] = useState("");
   const [AccInputValue, setAccInputValue] = useState("");
 
+  const refetchAccountsInInterval = (
+    FetchAccountsFn,
+    times = 3,
+    intervalMs = 3000
+  ) => {
+    // console.log("refetchAccountsInInterval");
+    // console.log("times", times);
+
+    let count = 0;
+    const interval = setInterval(() => {
+      if (count < times) {
+        FetchAccountsFn();
+        count++;
+      } else {
+        clearInterval(interval);
+      }
+    }, intervalMs);
+  };
+
   const CreateHandleSubmit = async (e) => {
     e.preventDefault();
     setCreateACCLoading(true);
@@ -136,8 +155,7 @@ const AccountsDetail = () => {
         }
       );
 
-      FetchAccounts();
-      console.log(response?.data);
+      // console.log(response?.data);
       setCreateACCLoading(false);
       setAccInputValue("");
 
@@ -151,6 +169,7 @@ const AccountsDetail = () => {
           IsSuccess: true,
         });
       }, 300);
+      refetchAccountsInInterval(FetchAccounts);
     } catch (error) {
       console.error(error?.response);
       // messageApi.error(error?.response?.data?.detail);
@@ -183,6 +202,7 @@ const AccountsDetail = () => {
     Upgrade: "/users/transactions/upgrade",
     CreateAccount: "/users/accounts/create",
   };
+
   const LoginData = isModalOpen.login;
   const [AccUpdateLoading, setAccUpdateLoading] = useState(false);
 
@@ -205,7 +225,6 @@ const AccountsDetail = () => {
         }
       );
       sessionStorage.setItem("Refetch_Accounts", "true");
-      FetchAccounts();
 
       setTimeout(() => {
         setNotifyModel({
@@ -217,6 +236,7 @@ const AccountsDetail = () => {
           IsSuccess: true,
         });
       }, 300);
+
       setIsModalOpen(false);
       setAccUpdateLoading(false);
       setIsModalOpen(false);
