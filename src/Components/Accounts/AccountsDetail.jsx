@@ -378,15 +378,28 @@ const AccountsDetail = () => {
                     currentBalance - multiplier * startingAmount;
 
                   const formattedProfit =
-                    Profitvalue < 0
-                      ? `-$${Math.abs(Profitvalue).toFixed(2)}`
-                      : `$${Profitvalue.toFixed(2)}`;
+                    Profitvalue < 0 ? `$0.00` : `$${Profitvalue.toFixed(2)}`;
+                  // console.log(formattedProfit);
+
+                  // const formattedProfit =
+                  //   Profitvalue < 0
+                  //     ? `-$${Math.abs(Profitvalue).toFixed(2)}`
+                  //     : `$${Profitvalue.toFixed(2)}`;
 
                   const MonthEnd = Profitvalue + startingAmount;
                   // console.log("MonthEnd-->>", MonthEnd);
 
+                  // const availableBalance =
+                  //   TradingDays > 30
+                  //     ? MonthEnd
+                  //     : formattedProfit
+
                   const availableBalance =
-                    TradingDays > 30 ? MonthEnd : Profitvalue;
+                    TradingDays > 30
+                      ? Math.max(0, MonthEnd)
+                      : Profitvalue < 0
+                      ? "$0.00"
+                      : formattedProfit;
                   // console.log("availableBalance--->>", availableBalance);
 
                   return (
@@ -538,6 +551,9 @@ const AccountsDetail = () => {
                               {/* {Profitvalue < 0
                                 ? `$${Profitvalue.toFixed(2)}`
                                 : `$${Profitvalue.toFixed(2)}`} */}
+                              {/* {Profitvalue > 0
+                                ? Profitvalue.toFixed(2)
+                                : "$0.00"} */}
                               {formattedProfit}
                             </p>
 
@@ -724,7 +740,6 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              $
                               {/* {(() => {
                                 const createdAt = new Date(account?.created_at);
                                 const today = new Date();
@@ -749,11 +764,11 @@ const AccountsDetail = () => {
                                 }
                               })()} */}
                               {/* {MonthEnd} */}
-                              {availableBalance.toFixed(2)}
+                              {availableBalance}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
                               {/* {tradingDays === 0 && availableBalance === 0 ? ( */}
-                              {availableBalance === 0 ? (
+                              {availableBalance === "$0.00" ? (
                                 <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Withdraw
                                 </button>
