@@ -12,7 +12,6 @@ import NotificationModel from "../Models/NotificationModel";
 const AccountsDetail = () => {
   const Token = sessionStorage.getItem("token");
   const ApiRefetch = sessionStorage.getItem("Refetch_Accounts");
-  const [daysSinceFirstTrade, setDaysSinceFirstTrade] = useState({});
 
   const [showBG, setshowBG] = useState("Active");
   const [messageApi, contextHolder] = message.useMessage();
@@ -578,7 +577,7 @@ const AccountsDetail = () => {
                             </p>
 
                             <div className="absolute bottom-3 left-0 w-full px-4">
-                              {showBG === "Deactivated" || Profitvalue < 50 ? (
+                              {showBG === "Deactivated" || Profitvalue <= 0 ? (
                                 <button className="GeistFont w-full bg-[#CAFA5E] opacity-50 text-black py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Upgrade
                                 </button>
@@ -1022,17 +1021,11 @@ const AccountsDetail = () => {
                       placeholder={isModalOpen.status}
                       className="w-full p-3 border-[1px] border-[#EBEBEB] rounded-[8px]"
                     />
-                    {
-                      isModalOpen?.status === "Withdraw" ? (
-                        <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
-                          Available For Withdrawal: $
-                          {Number(isModalOpen?.Profitvalue).toFixed(2)}
-                        </span>
-                      ) : null
-                      // <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
-                      //   Min $50
-                      // </span>
-                    }
+                    {isModalOpen?.status === "Withdraw" && (
+                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                        Available For Withdrawal: {isModalOpen?.Profitvalue}
+                      </span>
+                    )}
                   </div>
                   <div>
                     <button
