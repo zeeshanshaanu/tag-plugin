@@ -23,6 +23,7 @@ const AccountsDetail = () => {
     status: "",
     login: "",
     Profitvalue: "",
+    amplifier: "",
   });
   // console.log(isModalOpen?.Profitvalue);
 
@@ -397,7 +398,7 @@ const AccountsDetail = () => {
                   // console.log("Profitvalue->>", Profitvalue);
 
                   const formattedProfit =
-                    Profitvalue > 0 ? `$${Profitvalue.toFixed(2)}` : `0.00`;
+                    Profitvalue > 0 ? `${Profitvalue.toFixed(2)}` : `0.00`;
                   // console.log(formattedProfit);
 
                   const MonthEnd = Profitvalue + startingAmount;
@@ -506,7 +507,11 @@ const AccountsDetail = () => {
                                     setIsModalOpen({
                                       isOpen: true,
                                       title: "Add more funds to your account",
-                                      desc: "To increase your 12X balance, add more funds; however, doing so will reset your trading days timer to zero.",
+                                      desc: `To increase your ${
+                                        account.multiplier === "12.0"
+                                          ? "12"
+                                          : "24"
+                                      }X balance, add more funds; however, doing so will reset your trading days timer to zero.`,
                                       buttonName: "Deposit",
                                       status: "Deposit",
                                       login: account.login,
@@ -540,12 +545,12 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {formattedProfit}
+                              ${formattedProfit}
                             </p>
 
                             <div className="absolute bottom-3 left-0 w-full px-4">
                               {showBG === "Deactivated" ||
-                              formattedProfit === "$0.00" ? (
+                              formattedProfit === "0.00" ? (
                                 <button className="GeistFont w-full bg-[#CAFA5E] opacity-50 text-black py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Upgrade
                                 </button>
@@ -556,10 +561,15 @@ const AccountsDetail = () => {
                                       isOpen: true,
                                       title:
                                         "Use your profit to upgrade your account and increase your balance",
-                                      desc: "Use your profits to increase your 12X balance. Please note, your trading days timer will reset to 0",
+                                      desc: `Use your profits to increase your ${
+                                        account.multiplier === "12.0"
+                                          ? "12"
+                                          : "24"
+                                      }X balance. Please note, your trading days timer will reset to 0`,
                                       buttonName: "Upgrade",
                                       status: "Upgrade",
                                       login: account.login,
+                                      Profitvalue: formattedProfit,
                                     })
                                   }
                                   className="GeistFont w-full bg-[#CAFA5E] text-black py-2 rounded-lg text-[18px] cursor-pointer"
@@ -964,16 +974,21 @@ const AccountsDetail = () => {
                       placeholder={isModalOpen.status}
                       className="w-full p-3 border-[1px] border-[#EBEBEB] rounded-[8px]"
                     />
-                    {isModalOpen?.status === "Withdraw" && (
-                      <span className=" left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
-                        Available For Withdrawal: {isModalOpen?.Profitvalue}
+                    {(isModalOpen?.status === "Withdraw" ||
+                      isModalOpen?.status === "Upgrade") && (
+                      <span className="left-[1px] top-[53px] text-[14px] font-bold text-[#171717]">
+                        Available For{" "}
+                        {isModalOpen.status === "Withdraw"
+                          ? "Withdrawal"
+                          : isModalOpen.status}
+                        : ${isModalOpen?.Profitvalue}
                       </span>
                     )}
                   </div>
                   <div>
                     {Number(InputValue) > Number(isModalOpen?.Profitvalue) ? (
                       <button className="GeistFont border-[1px]  bg-gray-400 text-white py-3 lg:px-[30px] px-[15px] rounded-[12px] cursor-not-allowed">
-                        Withdraw
+                        {isModalOpen.buttonName}
                       </button>
                     ) : (
                       <button
