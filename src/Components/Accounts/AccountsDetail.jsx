@@ -508,9 +508,13 @@ const AccountsDetail = () => {
                                       isOpen: true,
                                       title: "Add more funds to your account",
                                       desc: `To increase your ${
-                                        account.multiplier === "12.0"
+                                        account.multiplier === "12.0" ||
+                                        account.multiplier === "12"
                                           ? "12"
-                                          : "24"
+                                          : account.multiplier === "24.0" ||
+                                            account.multiplier === "24"
+                                          ? "24"
+                                          : null
                                       }X balance, add more funds; however, doing so will reset your trading days timer to zero.`,
                                       buttonName: "Deposit",
                                       status: "Deposit",
@@ -562,9 +566,13 @@ const AccountsDetail = () => {
                                       title:
                                         "Use your profit to upgrade your account and increase your balance",
                                       desc: `Use your profits to increase your ${
-                                        account.multiplier === "12.0"
+                                        account.multiplier === "12.0" ||
+                                        account.multiplier === "12"
                                           ? "12"
-                                          : "24"
+                                          : account.multiplier === "24.0" ||
+                                            account.multiplier === "24"
+                                          ? "24"
+                                          : null
                                       }X balance. Please note, your trading days timer will reset to 0`,
                                       buttonName: "Upgrade",
                                       status: "Upgrade",
