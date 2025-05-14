@@ -98,7 +98,7 @@ const AccountsDetail = () => {
           : 0;
         daysMap[acc._id] = days;
       });
-      setTradingDays(daysMap);
+      // setTradingDays(daysMap);
 
       setAccountDetails(sortedAccounts);
       setCount(response?.data?.total);
@@ -168,6 +168,7 @@ const AccountsDetail = () => {
           IsSuccess: true,
         });
       }, 300);
+
       refetchAccountsInInterval(FetchAccounts);
     } catch (error) {
       console.error(error?.response);
@@ -223,7 +224,7 @@ const AccountsDetail = () => {
           },
         }
       );
-      sessionStorage.setItem("Refetch_Accounts", "true");
+      setIsModalOpen(false);
 
       setTimeout(() => {
         setNotifyModel({
@@ -236,9 +237,11 @@ const AccountsDetail = () => {
         });
       }, 300);
 
-      setIsModalOpen(false);
+      setTimeout(() => {
+        FetchAccounts();
+      }, 2000);
+
       setAccUpdateLoading(false);
-      setIsModalOpen(false);
       setInputValue("");
     } catch (error) {
       console.error(error?.response);
@@ -253,7 +256,6 @@ const AccountsDetail = () => {
         });
         setIsModalOpen(false);
       }, 300);
-
       setAccUpdateLoading(false);
     }
   };
@@ -380,46 +382,31 @@ const AccountsDetail = () => {
                           (1000 * 60 * 60 * 24)
                       )
                     : 0;
-                  // console.log("TradingDays--->>", TradingDays);
 
                   const lockingPeriod = Number(account?.locking_period);
-                  // Calculate days since account was created
                   const daysSinceCreated = Math.floor(
                     (today - createdAt) / (1000 * 60 * 60 * 24)
                   );
-                  // console.log("daysSinceCreated--->>", daysSinceCreated);
-                  // CALCULATE Remaining Days
 
                   const RemainingDays = lockingPeriod - daysSinceCreated;
                   // console.log("RemainingDays->>", RemainingDays);
 
                   const Profitvalue =
                     currentBalance - multiplier * startingAmount;
+                  // console.log("Profitvalue->>", Profitvalue);
 
                   const formattedProfit =
-                    Profitvalue < 0 ? `$0.00` : `$${Profitvalue.toFixed(2)}`;
+                    Profitvalue > 0 ? `$${Profitvalue.toFixed(2)}` : `$0.00`;
                   // console.log(formattedProfit);
 
-                  // const formattedProfit =
-                  //   Profitvalue < 0
-                  //     ? `-$${Math.abs(Profitvalue).toFixed(2)}`
-                  //     : `$${Profitvalue.toFixed(2)}`;
-
                   const MonthEnd = Profitvalue + startingAmount;
-                  // console.log("MonthEnd-->>", MonthEnd);
-
-                  // const availableBalance =
-                  //   TradingDays > 30
-                  //     ? MonthEnd
-                  //     : formattedProfit
 
                   const availableBalance =
                     TradingDays > 30
-                      ? Math.max(0, MonthEnd)
+                      ? `$${MonthEnd.toFixed(2)}`
                       : Profitvalue < 0
                       ? "$0.00"
                       : formattedProfit;
-                  // console.log("availableBalance--->>", availableBalance);
 
                   return (
                     <div key={index}>
@@ -552,32 +539,12 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {/* {(() => {
-                                const value =
-                                  Number(account?.current_balance) -
-                                  Number(account?.multiplier) *
-                                    Number(account?.starting_amount);
-                                // const value =
-                                //   Number(account?.current_equity) -
-                                //   Number(account?.current_balance);
-                                const formattedValue =
-                                  Math.abs(value).toFixed(2);
-                                return value < 0
-                                  ? `-$${formattedValue}`
-                                  : `$${formattedValue}`;
-                              })()} */}
-
-                              {/* {Profitvalue < 0
-                                ? `$${Profitvalue.toFixed(2)}`
-                                : `$${Profitvalue.toFixed(2)}`} */}
-                              {/* {Profitvalue > 0
-                                ? Profitvalue.toFixed(2)
-                                : "$0.00"} */}
                               {formattedProfit}
                             </p>
 
                             <div className="absolute bottom-3 left-0 w-full px-4">
-                              {showBG === "Deactivated" || Profitvalue <= 0 ? (
+                              {showBG === "Deactivated" ||
+                              formattedProfit === "$0.00" ? (
                                 <button className="GeistFont w-full bg-[#CAFA5E] opacity-50 text-black py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Upgrade
                                 </button>
@@ -751,38 +718,12 @@ const AccountsDetail = () => {
                                   color={"#F5F5F5"}
                                   placement="top"
                                   overlayInnerStyle={{ color: "black" }}
-
-                                  // key={color}
                                 >
                                   <InfoCircleOutlined className="cursor-pointer" />
                                 </Tooltip>{" "}
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {/* {(() => {
-                                const createdAt = new Date(account?.created_at);
-                                const today = new Date();
-                                const daysSinceCreated = Math.floor(
-                                  (today - createdAt) / (1000 * 60 * 60 * 24)
-                                );
-                                const lockingPeriod = Number(
-                                  account?.locking_period
-                                );
-                                const remainingDays =
-                                  lockingPeriod - daysSinceCreated;
-
-                                if (remainingDays <= 0) {
-                                  // Locking period completed
-                                  return Math.max(
-                                    Profitvalue + startingAmount,
-                                    0
-                                  ).toFixed(2);
-                                } else {
-                                  // Locking period still active
-                                  return Math.max(Profitvalue, 0).toFixed(2);
-                                }
-                              })()} */}
-                              {/* {MonthEnd} */}
                               {availableBalance}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
@@ -1013,7 +954,8 @@ const AccountsDetail = () => {
                   <div className="w-full">
                     <input
                       type="number"
-                      min={1}
+                      min={0.1}
+                      step="0.01"
                       max={Number(isModalOpen?.Profitvalue).toFixed(2)}
                       required
                       value={InputValue}
