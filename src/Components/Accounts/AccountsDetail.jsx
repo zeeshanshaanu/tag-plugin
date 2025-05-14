@@ -237,9 +237,10 @@ const AccountsDetail = () => {
         });
       }, 300);
 
-      setTimeout(() => {
-        FetchAccounts();
-      }, 2000);
+      // setTimeout(() => {
+      //   FetchAccounts();
+      // }, 2000);
+      refetchAccountsInInterval(FetchAccounts);
 
       setAccUpdateLoading(false);
       setInputValue("");
@@ -396,16 +397,16 @@ const AccountsDetail = () => {
                   // console.log("Profitvalue->>", Profitvalue);
 
                   const formattedProfit =
-                    Profitvalue > 0 ? `$${Profitvalue.toFixed(2)}` : `$0.00`;
+                    Profitvalue > 0 ? `$${Profitvalue.toFixed(2)}` : `0.00`;
                   // console.log(formattedProfit);
 
                   const MonthEnd = Profitvalue + startingAmount;
 
                   const availableBalance =
                     TradingDays > 30
-                      ? `$${MonthEnd.toFixed(2)}`
+                      ? `${MonthEnd.toFixed(2)}`
                       : Profitvalue < 0
-                      ? "$0.00"
+                      ? "0.00"
                       : formattedProfit;
 
                   return (
@@ -724,11 +725,11 @@ const AccountsDetail = () => {
                               </div>
                             </div>
                             <p className="lg:text-[32px] text-[22px] font-[500] mt-3">
-                              {availableBalance}
+                              ${availableBalance}
                             </p>
                             <div className="absolute bottom-3 left-0 w-full px-4">
                               {/* {tradingDays === 0 && availableBalance === 0 ? ( */}
-                              {availableBalance === "$0.00" ? (
+                              {availableBalance === "0.00" ? (
                                 <button className="GeistFont w-full bg-gray-400 text-white py-2 rounded-lg text-[18px] cursor-not-allowed">
                                   Withdraw
                                 </button>
@@ -970,19 +971,27 @@ const AccountsDetail = () => {
                     )}
                   </div>
                   <div>
-                    <button
-                      type="submit"
-                      disabled={Loading}
-                      className={`GeistFont border-[1px]  bg-[#CAFA5E] text-black border-[#CAFA5E] py-3 lg:px-[30px] px-[15px] rounded-[12px]
+                    {Number(InputValue) > Number(isModalOpen?.Profitvalue) ? (
+                      <button className="GeistFont border-[1px]  bg-gray-400 text-white py-3 lg:px-[30px] px-[15px] rounded-[12px] cursor-not-allowed">
+                        Withdraw
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={Loading}
+                        className={`GeistFont border-[1px] bg-[#CAFA5E] text-black border-[#CAFA5E] py-3 lg:px-[30px] px-[15px] rounded-[12px]
                 ${
                   AccUpdateLoading
                     ? "opacity-50 cursor-wait"
                     : "opacity-100 cursor-pointer"
                 }
                 `}
-                    >
-                      {AccUpdateLoading ? "Loading..." : isModalOpen.buttonName}
-                    </button>
+                      >
+                        {AccUpdateLoading
+                          ? "Loading..."
+                          : isModalOpen.buttonName}
+                      </button>
+                    )}
                   </div>
                 </div>
               </form>
