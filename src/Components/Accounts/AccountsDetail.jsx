@@ -8,6 +8,7 @@ import {
 import axios from "axios";
 import { Modal, Tooltip, message, Progress } from "antd";
 import NotificationModel from "../Models/NotificationModel";
+import AuthCheckModel from "../Models/AuthCheckModel";
 
 const AccountsDetail = () => {
   const Token = sessionStorage.getItem("token");
@@ -24,6 +25,12 @@ const AccountsDetail = () => {
     login: "",
     Profitvalue: "",
     amplifier: "",
+  });
+  const [AuthCheck, setAuthCheck] = useState({
+    isOpen: false,
+    title: "",
+    desc: "",
+    buttonName: "",
   });
   // console.log(isModalOpen?.Profitvalue);
 
@@ -48,7 +55,6 @@ const AccountsDetail = () => {
   const [Count, setCount] = useState();
 
   const [AccountDetails, setAccountDetails] = useState([]);
-  const [TradingDays, setTradingDays] = useState({});
 
   const [Loading, setLoading] = useState(false);
 
@@ -99,13 +105,25 @@ const AccountsDetail = () => {
           : 0;
         daysMap[acc._id] = days;
       });
-      // setTradingDays(daysMap);
 
       setAccountDetails(sortedAccounts);
       setCount(response?.data?.total);
     } catch (error) {
       console.error("Error fetching profile:", error);
-      setAccountDetails(null);
+      // Check for 401 Unauthorized
+      if (
+        error.response?.data?.detail === "Token has expired" ||
+        error.response?.data?.detail === "Unauthorized"
+      ) {
+        setAuthCheck({
+          isOpen: true,
+          title: "Session Expired",
+          desc: "Your session has expired. Please refresh this page",
+          buttonName: "Continue",
+        });
+      } else {
+        setAccountDetails(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -184,6 +202,17 @@ const AccountsDetail = () => {
           IsSuccess: false,
         });
       }, 300);
+      if (
+        error.response?.data?.detail === "Token has expired" ||
+        error.response?.data?.detail === "Unauthorized"
+      ) {
+        setAuthCheck({
+          isOpen: true,
+          title: "Session Expired",
+          desc: "Your session has expired. Please refresh this page",
+          buttonName: "Continue",
+        });
+      }
       setCreateACCLoading(false);
     }
   };
@@ -256,6 +285,17 @@ const AccountsDetail = () => {
           status: "create account",
           IsSuccess: false,
         });
+        if (
+          error.response?.data?.detail === "Token has expired" ||
+          error.response?.data?.detail === "Unauthorized"
+        ) {
+          setAuthCheck({
+            isOpen: true,
+            title: "Session Expired",
+            desc: "Your session has expired. Please refresh this page",
+            buttonName: "Continue",
+          });
+        }
         setIsModalOpen(false);
       }, 300);
       setAccUpdateLoading(false);
@@ -1029,6 +1069,7 @@ const AccountsDetail = () => {
         setNotifyModel={setNotifyModel}
         NotifyModel={NotifyModel}
       />
+      <AuthCheckModel setAuthCheck={setAuthCheck} AuthCheck={AuthCheck} />
     </div>
   );
 };
