@@ -385,7 +385,10 @@ const AccountsDetail = () => {
                       )
                     : 0;
 
+                  // console.log("TradingDays->>", TradingDays);
+
                   const lockingPeriod = Number(account?.locking_period);
+
                   const daysSinceCreated = Math.floor(
                     (today - createdAt) / (1000 * 60 * 60 * 24)
                   );
@@ -404,7 +407,7 @@ const AccountsDetail = () => {
                   const MonthEnd = Profitvalue + startingAmount;
 
                   const availableBalance =
-                    TradingDays > 30
+                    TradingDays > lockingPeriod
                       ? `${MonthEnd.toFixed(2)}`
                       : Profitvalue < 0
                       ? "0.00"
